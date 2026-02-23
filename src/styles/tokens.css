@@ -4,25 +4,25 @@
 
 :root {
   /* --- Typography --- */
-  --font-heading: "Questrial", "Century Gothic", sans-serif;
-  --font-body: "Questrial", "Century Gothic", sans-serif;
+  --font-heading: "Cormorant Garamond", "Garamond", "Times New Roman", serif;
+  --font-body: "Source Sans 3", "Segoe UI", "Trebuchet MS", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
   /* --- Light Mode Colors (default) --- */
-  --bg-primary: #f9f8f6; /* Warm Ivory */
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f2f0ec;
+  --bg-primary: #bf9f79; /* Desk */
+  --bg-secondary: #f7f1e6; /* Page */
+  --bg-tertiary: #efe3d4;
 
-  --text-primary: #2c2c2c; /* Softer black */
-  --text-secondary: #555555;
-  --text-tertiary: #8a8a86;
+  --text-primary: #2d2722; /* Ink */
+  --text-secondary: #4b433c;
+  --text-tertiary: #7a7169;
 
-  --accent-primary: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-subtle: #eff6ff;
-  --accent-gradient: linear-gradient(135deg, #2563eb, #4f46e5);
+  --accent-primary: #b46a4c;
+  --accent-hover: #9f5a40;
+  --accent-subtle: #f0e1d7;
+  --accent-gradient: none;
 
-  --border: #e8e5df;
+  --border: #ddcdbb;
 
   --success: #16a34a;
   --success-subtle: #f0fdf4;
@@ -31,7 +31,14 @@
   --error: #dc2626;
   --error-subtle: #fef2f2;
 
-  --math-bg: #f8f7f4;
+  --math-bg: #f8f4eb;
+
+  /* --- Book Materials --- */
+  --paper-edge: #efe2d1;
+  --paper-shadow: rgba(39, 29, 20, 0.15);
+  --binding-metal: #c3b6a6;
+  --binding-dark: #8d8175;
+  --ink-soft: rgba(43, 36, 31, 0.75);
 
   /* --- Stage Colors --- */
   --stage-foundations: #2563eb;
@@ -70,22 +77,28 @@
 
 /* --- Dark Mode --- */
 .dark {
-  --bg-primary: #0f0f13;
-  --bg-secondary: #1a1a20;
-  --bg-tertiary: #252530;
+  --bg-primary: #121214;
+  --bg-secondary: #1b1b20;
+  --bg-tertiary: #25252b;
 
   --text-primary: #ededec;
   --text-secondary: #b8b8b4;
-  --text-tertiary: #6b6b66;
+  --text-tertiary: #7a7a74;
 
   --accent-primary: #60a5fa;
   --accent-hover: #93c5fd;
-  --accent-subtle: #172135;
+  --accent-subtle: #1c2436;
   --accent-gradient: linear-gradient(135deg, #60a5fa, #818cf8);
 
-  --border: #2a2a34;
+  --border: #2f2f38;
 
   --math-bg: #1a1a24;
+
+  --paper-edge: #1e1e24;
+  --paper-shadow: rgba(0, 0, 0, 0.35);
+  --binding-metal: #3a3a46;
+  --binding-dark: #2b2b36;
+  --ink-soft: rgba(237, 237, 236, 0.8);
 
   --success-subtle: #052e16;
   --warning-subtle: #2a1a00;

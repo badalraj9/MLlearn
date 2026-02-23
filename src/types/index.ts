@@ -134,6 +134,46 @@ export interface LearningPath {
   estimatedHours: number;
 }
 
+// --- Modular Learning ---
+
+export type LearnerRank =
+  | "explorer"
+  | "apprentice"
+  | "practitioner"
+  | "specialist"
+  | "strategist"
+  | "expert"
+  | "visionary"
+  | "luminary";
+
+export interface Topic {
+  id: string;
+  title: string;
+  summary: string;
+  assessmentPrompt: string;
+}
+
+export interface Chapter {
+  id: string;
+  title: string;
+  description: string;
+  topics: Topic[];
+}
+
+export interface Level {
+  id: LearnerRank;
+  title: string;
+  description: string;
+  chapters: Chapter[];
+}
+
+export interface Module {
+  id: string;
+  title: string;
+  description: string;
+  levels: Level[];
+}
+
 // --- Progress ---
 
 export interface ConceptProgress {

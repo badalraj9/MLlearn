@@ -2,10 +2,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MathJaxContext } from "better-react-mathjax";
 import Layout from "@/components/layout/Layout";
 import HomePage from "@/pages/HomePage";
-import ConceptsPage from "@/pages/ConceptsPage";
-import ConceptDetailPage from "@/pages/ConceptDetailPage";
+import IntroPage from "@/pages/IntroPage";
+import ModulesPage from "@/pages/ModulesPage";
+import ModuleDetailPage from "@/pages/ModuleDetailPage";
+import LevelDetailPage from "@/pages/LevelDetailPage";
+import TopicPage from "@/pages/TopicPage";
 import PapersPage from "@/pages/PapersPage";
-import PaperDetailPage from "@/pages/PaperDetailPage";
 import ConceptGraphPage from "@/pages/ConceptGraphPage";
 
 const mathJaxConfig = {
@@ -25,10 +27,18 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<HomePage />} />
-            <Route path="concepts" element={<ConceptsPage />} />
-            <Route path="concepts/:slug" element={<ConceptDetailPage />} />
+            <Route path="home" element={<IntroPage />} />
+            <Route path="modules" element={<ModulesPage />} />
+            <Route path="modules/:moduleId" element={<ModuleDetailPage />} />
+            <Route
+              path="modules/:moduleId/levels/:levelId"
+              element={<LevelDetailPage />}
+            />
+            <Route
+              path="modules/:moduleId/levels/:levelId/chapters/:chapterId/topics/:topicId"
+              element={<TopicPage />}
+            />
             <Route path="papers" element={<PapersPage />} />
-            <Route path="papers/:id" element={<PaperDetailPage />} />
             <Route path="graph" element={<ConceptGraphPage />} />
           </Route>
         </Routes>
