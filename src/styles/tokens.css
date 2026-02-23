@@ -1,0 +1,97 @@
+/* ===========================
+   MLearn Design Tokens
+   =========================== */
+
+:root {
+  /* --- Typography --- */
+  --font-heading: "Playfair Display", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* --- Light Mode Colors (default) --- */
+  --bg-primary: #fafaf8;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f2f0ec;
+
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-tertiary: #8a8a86;
+
+  --accent-primary: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-subtle: #eff6ff;
+  --accent-gradient: linear-gradient(135deg, #2563eb, #4f46e5);
+
+  --border: #e8e5df;
+
+  --success: #16a34a;
+  --success-subtle: #f0fdf4;
+  --warning: #d97706;
+  --warning-subtle: #fffbeb;
+  --error: #dc2626;
+  --error-subtle: #fef2f2;
+
+  --math-bg: #f8f7f4;
+
+  /* --- Stage Colors --- */
+  --stage-foundations: #2563eb;
+  --stage-foundations-bg: #eff6ff;
+  --stage-core-ml: #7c3aed;
+  --stage-core-ml-bg: #f5f3ff;
+  --stage-deep-learning: #dc2626;
+  --stage-deep-learning-bg: #fef2f2;
+  --stage-research: #d97706;
+  --stage-research-bg: #fffbeb;
+
+  /* --- Spacing --- */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* --- Borders --- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* --- Shadows --- */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
+
+  /* --- Sidebar --- */
+  --sidebar-width: 260px;
+  --sidebar-collapsed: 64px;
+}
+
+/* --- Dark Mode --- */
+.dark {
+  --bg-primary: #0f0f13;
+  --bg-secondary: #1a1a20;
+  --bg-tertiary: #252530;
+
+  --text-primary: #ededec;
+  --text-secondary: #b8b8b4;
+  --text-tertiary: #6b6b66;
+
+  --accent-primary: #60a5fa;
+  --accent-hover: #93c5fd;
+  --accent-subtle: #172135;
+  --accent-gradient: linear-gradient(135deg, #60a5fa, #818cf8);
+
+  --border: #2a2a34;
+
+  --math-bg: #1a1a24;
+
+  --success-subtle: #052e16;
+  --warning-subtle: #2a1a00;
+  --error-subtle: #2a0a0a;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.5);
+}

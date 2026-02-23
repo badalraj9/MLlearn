@@ -1,0 +1,53 @@
+/* ===========================
+   MathJax Equation Styles
+   =========================== */
+
+/* Block equations — centered with background */
+.math-block {
+  background-color: var(--math-bg);
+  padding: var(--space-lg) var(--space-xl);
+  border-radius: var(--radius-md);
+  margin: var(--space-lg) 0;
+  overflow-x: auto;
+  text-align: center;
+}
+
+/* Key/important equations get a left accent border */
+.math-block--key {
+  border-left: 3px solid var(--accent-primary);
+}
+
+/* Inline math — seamless with text */
+.math-inline {
+  display: inline;
+  vertical-align: baseline;
+}
+
+/* Equation labels/numbers */
+.math-label {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  float: right;
+  margin-top: var(--space-sm);
+}
+
+/* Derivation/proof steps */
+.math-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.math-step:last-child {
+  border-bottom: none;
+}
+
+.math-step-number {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  min-width: 24px;
+}
