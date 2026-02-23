@@ -1,14 +1,13 @@
-import { Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
+import { Outlet, useLocation } from "react-router-dom";
+import TopNav from "./TopNav";
 import Header from "./Header";
-import { useUIStore } from "@/store";
 
 export default function Layout() {
-  const { sidebarCollapsed } = useUIStore();
+  const location = useLocation();
 
   return (
     <div
-      className="min-h-screen"
+      className="min-h-screen flex flex-col font-body"
       style={{ backgroundColor: "var(--bg-primary)" }}
     >
       {/* Skip to content (a11y) */}
@@ -16,22 +15,20 @@ export default function Layout() {
         Skip to content
       </a>
 
-      <Sidebar />
+      {/* Top Navigation */}
+      <TopNav />
 
-      <div
-        className="transition-all duration-200 ease-out"
-        style={{
-          marginLeft: sidebarCollapsed
-            ? "var(--sidebar-collapsed)"
-            : "var(--sidebar-width)",
-        }}
-      >
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col w-full max-w-[1000px] mx-auto px-6">
+        {/* Breadcrumbs */}
         <Header />
 
-        <main id="main-content" className="px-8 py-8 animate-fade-in">
-          <div className="mx-auto" style={{ maxWidth: "1200px" }}>
+        <main
+            id="main-content"
+            className="flex-1 animate-page-enter"
+            key={location.pathname}
+        >
             <Outlet />
-          </div>
         </main>
       </div>
     </div>

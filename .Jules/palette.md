@@ -1,4 +1,5 @@
-## 2025-02-18 - [Interaction] Interactive Expanders
 
-**Learning:** When using `button` to toggle content, it's critical to provide semantic connection via `aria-expanded` and `aria-controls`. This is often missed in custom accordion/toggle implementations.
-**Action:** Always pair state toggle buttons with `aria-expanded` and `aria-controls` pointing to the content ID. Add `animate-fade-in` for smoother transition.
+## 2025-02-18 - [Design] Book Theme Overhaul
+
+**Learning:** When users request a "book feel", standard web navigation (sidebar) often breaks the metaphor. Top-aligned navigation resembling binding or tabs works better.
+**Action:** Replaced sidebar with `TopNav` (punch-hole binding style). Switched typography to geometric sans (Questrial/Century Gothic) for a cleaner, modern-academic look. Added page-turn-like enter animations.
