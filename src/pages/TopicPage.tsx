@@ -29,17 +29,44 @@ export default function TopicPage() {
       <div className="hero-grid">
         <div>
           <div className="section-title">Theory</div>
-          <p className="hero-copy">
-            This section explains the core idea with intuition and math.
-          </p>
-          <div className="equation-block">f(x) = ax + b</div>
-          <div className="callout">Aha: Adjust coefficients to see slope change.</div>
+          {topic.content?.intro?.map((line) => (
+            <p key={line} className="hero-copy">
+              {line}
+            </p>
+          ))}
+          {topic.content?.equations?.map((eq) => (
+            <div key={eq} className="equation-block">
+              {eq}
+            </div>
+          ))}
+          {!topic.content && (
+            <>
+              <p className="hero-copy">
+                This section explains the core idea with intuition and math.
+              </p>
+              <div className="equation-block">f(x) = ax + b</div>
+              <div className="callout">Aha: Adjust coefficients to see slope change.</div>
+            </>
+          )}
         </div>
         <div>
-          <div className="section-title">Playground</div>
+          <div className="section-title">Key Ideas</div>
           <div className="card insert-block">
-            <p>Interactive widget placeholder</p>
+            {topic.content?.keyIdeas ? (
+              <ul className="topic-list">
+                {topic.content.keyIdeas.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>Interactive widget placeholder</p>
+            )}
           </div>
+          {topic.content?.references && (
+            <div className="callout">
+              Source: {topic.content.references.join(" • ")}
+            </div>
+          )}
         </div>
       </div>
 

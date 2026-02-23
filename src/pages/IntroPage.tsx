@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-import { modules } from "@/content/modules";
 import { BookOpen } from "lucide-react";
 
 export default function IntroPage() {
@@ -10,33 +8,34 @@ export default function IntroPage() {
           <BookOpen size={16} />
         </div>
         <div>
-          <h1 className="page-header-title">What MLearn Contains</h1>
+          <h1 className="page-header-title">About MLearn</h1>
           <p className="page-header-sub">
-            A structured, book-like journey through machine learning.
+            A book-first learning studio for machine learning mastery.
           </p>
         </div>
       </div>
       <div className="toc-block">
         <div className="toc-title">On This Page</div>
         <div className="toc-list">
-          <span>Learning Map</span>
-          <span>Modules Preview</span>
+          <span>Vision</span>
+          <span>How It Works</span>
+          <span>Roadmap</span>
         </div>
       </div>
 
       <div className="section-block">
         <div className="info-stack">
           <div className="info-card">
-            <h3>Learn in Modules</h3>
-            <p>Math, ML theory, algorithms, and research reading.</p>
+            <h3>Vision</h3>
+            <p>Teach ML like a guided book: calm, rigorous, and tactile.</p>
           </div>
           <div className="info-card">
-            <h3>Earn Coins</h3>
-            <p>Complete assessments to unlock the next topics.</p>
+            <h3>How It Works</h3>
+            <p>Progress through chapters, unlock topics, and learn by doing.</p>
           </div>
           <div className="info-card">
-            <h3>Choose Your Path</h3>
-            <p>Spend coins to jump ahead or follow the guided sequence.</p>
+            <h3>Rewards & Unlocks</h3>
+            <p>Assessments award coins to access advanced material.</p>
           </div>
         </div>
       </div>
@@ -44,14 +43,24 @@ export default function IntroPage() {
       <div className="section-divider" aria-hidden="true" />
 
       <section className="section-block">
-        <div className="section-title">Modules</div>
+        <div className="section-title">Roadmap</div>
         <div className="card-grid">
-          {modules.slice(0, 4).map((module) => (
-            <Link key={module.id} to={`/modules/${module.id}`} className="card">
-              <h3>{module.title}</h3>
-              <p>{module.description}</p>
-            </Link>
-          ))}
+          <div className="card">
+            <h3>Interactive Lessons</h3>
+            <p>Equations, graphs, and simulations per topic.</p>
+          </div>
+          <div className="card">
+            <h3>Adaptive Unlocks</h3>
+            <p>Coin-based access based on performance.</p>
+          </div>
+          <div className="card">
+            <h3>Research Reading</h3>
+            <p>Paper deconstruction with guided prompts.</p>
+          </div>
+          <div className="card">
+            <h3>Community Paths</h3>
+            <p>Shared routes from beginner to research.</p>
+          </div>
         </div>
       </section>
     </div>

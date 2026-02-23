@@ -161,7 +161,7 @@ const initialUnlockedChapters = [
 export const useLearningStore = create<LearningState>()(
   persist(
     (set, get) => ({
-      coins: 3,
+      coins: 50000,
       currentRank: "explorer",
       unlockedChapters: initialUnlockedChapters,
       unlockedTopics: initialUnlockedTopics,

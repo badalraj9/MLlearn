@@ -1,10 +1,10 @@
 import { NavLink } from "react-router-dom";
 
 const navItems = [
-  { to: "/", label: "Dashboard" },
-  { to: "/home", label: "Home" },
+  { to: "/", label: "Home" },
   { to: "/modules", label: "Modules" },
   { to: "/papers", label: "Papers" },
+  { to: "/about", label: "About" },
   { to: "/graph", label: "Graph" },
 ];
 
@@ -16,9 +16,7 @@ export default function TopNav() {
           <NavLink
             key={item.to}
             to={item.to}
-            className={({ isActive }) =>
-              `top-nav-link ${isActive ? "active" : ""}`
-            }
+            className={({ isActive }) => `top-nav-link ${isActive ? "active" : ""}`}
           >
             {item.label}
           </NavLink>

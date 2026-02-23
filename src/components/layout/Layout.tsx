@@ -1,25 +1,18 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import TopNav from "./TopNav";
 import Header from "./Header";
-import { useEffect, useRef, useState } from "react";
+import LampPull from "./LampPull";
 
 const pageNumbers: Record<string, string> = {
   "/": "01",
-  "/home": "02",
-  "/modules": "03",
-  "/papers": "04",
+  "/modules": "02",
+  "/papers": "03",
+  "/about": "04",
   "/graph": "05",
 };
 
-const pageOrder = ["/", "/home", "/modules", "/papers", "/graph"];
-
-const pageTitles: Record<string, string> = {
-  "/": "Dashboard",
-  "/home": "Home",
-  "/modules": "Modules",
-  "/papers": "Papers",
-  "/graph": "Graph",
-};
+const pageOrder = ["/", "/modules", "/papers", "/about", "/graph"];
 
 export default function Layout() {
   const location = useLocation();
@@ -28,9 +21,6 @@ export default function Layout() {
   const pageNumber =
     pageNumbers[location.pathname] ??
     (location.pathname.startsWith("/modules") ? "03" : "06");
-  const pageTitle =
-    pageTitles[location.pathname] ??
-    (location.pathname.startsWith("/modules") ? "Modules" : "Page");
   const currentIndex = pageOrder.indexOf(location.pathname);
   const prevPath = currentIndex > 0 ? pageOrder[currentIndex - 1] : null;
   const nextPath =
@@ -47,6 +37,7 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen font-body">
+      <LampPull />
       <div className="book-shell">
         <div className="punch-rail" aria-hidden="true">
           {Array.from({ length: 12 }).map((_, i) => (
@@ -72,7 +63,6 @@ export default function Layout() {
             {nextPath ? <Link to={nextPath}>Next</Link> : <span>Next</span>}
           </div>
         </div>
-
       </div>
     </div>
   );

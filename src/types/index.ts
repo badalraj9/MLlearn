@@ -151,6 +151,12 @@ export interface Topic {
   title: string;
   summary: string;
   assessmentPrompt: string;
+  content?: {
+    intro: string[];
+    keyIdeas: string[];
+    equations?: string[];
+    references?: string[];
+  };
 }
 
 export interface Chapter {

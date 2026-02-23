@@ -27,7 +27,7 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<HomePage />} />
-            <Route path="home" element={<IntroPage />} />
+            <Route path="about" element={<IntroPage />} />
             <Route path="modules" element={<ModulesPage />} />
             <Route path="modules/:moduleId" element={<ModuleDetailPage />} />
             <Route

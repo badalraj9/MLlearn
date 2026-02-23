@@ -4,6 +4,7 @@ const routeLabels: Record<string, string> = {
   home: "Home",
   modules: "Modules",
   papers: "Papers",
+  about: "About",
   graph: "Concept Graph",
 };
 
@@ -15,7 +16,7 @@ export default function Header() {
 
   return (
     <nav className="breadcrumb" aria-label="Breadcrumb">
-      <Link to="/">Home</Link>
+      <Link to="/">Dashboard</Link>
       {pathParts.map((part, index) => {
         const path = "/" + pathParts.slice(0, index + 1).join("/");
         const label =

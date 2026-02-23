@@ -4,8 +4,8 @@
 
 :root {
   /* --- Typography --- */
-  --font-heading: "Cormorant Garamond", "Garamond", "Times New Roman", serif;
-  --font-body: "Source Sans 3", "Segoe UI", "Trebuchet MS", sans-serif;
+  --font-heading: "Century Gothic", "Futura", "Avenir Next", "Segoe UI", sans-serif;
+  --font-body: "Century Gothic", "Futura", "Avenir Next", "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
   /* --- Light Mode Colors (default) --- */
