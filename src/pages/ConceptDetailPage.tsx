@@ -277,6 +277,8 @@ function ProblemCard({ problem }: { problem: Problem }) {
       {/* Hints */}
       <button
         onClick={() => setShowHints(!showHints)}
+        aria-expanded={showHints}
+        aria-controls={`hints-${problem.id}`}
         className="flex items-center gap-1 text-xs font-medium mb-2 cursor-pointer"
         style={{ color: "var(--warning)", background: "none", border: "none" }}
       >
@@ -285,7 +287,8 @@ function ProblemCard({ problem }: { problem: Problem }) {
       </button>
       {showHints && (
         <div
-          className="mb-4 pl-4"
+          id={`hints-${problem.id}`}
+          className="mb-4 pl-4 animate-fade-in"
           style={{ borderLeft: "2px solid var(--warning)" }}
         >
           {problem.hints.map((hint, i) => (
@@ -303,6 +306,8 @@ function ProblemCard({ problem }: { problem: Problem }) {
       {/* Solution */}
       <button
         onClick={() => setShowSolution(!showSolution)}
+        aria-expanded={showSolution}
+        aria-controls={`solution-${problem.id}`}
         className="flex items-center gap-1 text-xs font-medium cursor-pointer"
         style={{ color: "var(--success)", background: "none", border: "none" }}
       >
@@ -311,7 +316,8 @@ function ProblemCard({ problem }: { problem: Problem }) {
       </button>
       {showSolution && (
         <div
-          className="mt-2 p-4 rounded-md"
+          id={`solution-${problem.id}`}
+          className="mt-2 p-4 rounded-md animate-fade-in"
           style={{
             backgroundColor: "var(--math-bg)",
             borderLeft: "2px solid var(--success)",
