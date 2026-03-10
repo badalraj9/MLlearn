@@ -4,17 +4,17 @@
 
 :root {
   /* --- Typography --- */
-  --font-heading: "Playfair Display", Georgia, serif;
-  --font-body: "Inter", system-ui, sans-serif;
+  --font-heading: "Questrial", "Century Gothic", sans-serif;
+  --font-body: "Questrial", "Century Gothic", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
   /* --- Light Mode Colors (default) --- */
-  --bg-primary: #fafaf8;
+  --bg-primary: #f9f8f6; /* Warm Ivory */
   --bg-secondary: #ffffff;
   --bg-tertiary: #f2f0ec;
 
-  --text-primary: #1a1a1a;
-  --text-secondary: #4a4a4a;
+  --text-primary: #2c2c2c; /* Softer black */
+  --text-secondary: #555555;
   --text-tertiary: #8a8a86;
 
   --accent-primary: #2563eb;
