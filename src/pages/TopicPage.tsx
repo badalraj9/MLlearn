@@ -1,87 +1,117 @@
 import { useParams, Link } from "react-router-dom";
 import { modules } from "@/content/modules";
 import { useLearningStore } from "@/store";
+import ProjectCard from "@/components/ProjectCard";
 
 export default function TopicPage() {
-  const { moduleId, levelId, chapterId, topicId } = useParams();
+  const { moduleId, topicId } = useParams();
   const module = modules.find((item) => item.id === moduleId);
-  const level = module?.levels.find((item) => item.id === levelId);
-  const chapter = level?.chapters.find((item) => item.id === chapterId);
-  const topic = chapter?.topics.find((item) => item.id === topicId);
-  const { completeTopic } = useLearningStore();
+  const topic = module?.topics.find((item) => item.id === topicId);
+  const { coins, isChapterTierCompleted, getChaptersDueForReview } =
+    useLearningStore();
 
-  if (!module || !level || !chapter || !topic) {
+  if (!module || !topic) {
     return <div className="page-content">Topic not found.</div>;
   }
 
+  // Count completed chapters (all 3 tiers done)
+  const completedCount = topic.chapters.filter(
+    (ch) =>
+      isChapterTierCompleted(ch.id, 1) &&
+      isChapterTierCompleted(ch.id, 2) &&
+      isChapterTierCompleted(ch.id, 3),
+  ).length;
+
+  // Check for chapters due for review
+  const dueReviews = getChaptersDueForReview().filter((r) =>
+    topic.chapters.some((ch) => ch.id === r.chapterId),
+  );
+
+  // Project unlocks when all chapters have at least tier 1 complete
+  const allTier1Done = topic.chapters.every((ch) =>
+    isChapterTierCompleted(ch.id, 1),
+  );
+
   return (
     <div className="page-content stagger-in">
-      <div className="chapter-ribbon" aria-hidden="true">
-        <span>{chapter.title}</span>
-      </div>
       <div className="page-header">
         <div>
           <h1 className="page-header-title">{topic.title}</h1>
-          <p className="page-header-sub">{topic.summary}</p>
+          <p className="page-header-sub">{topic.description}</p>
         </div>
-      </div>
-
-      <div className="hero-grid">
-        <div>
-          <div className="section-title">Theory</div>
-          {topic.content?.intro?.map((line) => (
-            <p key={line} className="hero-copy">
-              {line}
-            </p>
-          ))}
-          {topic.content?.equations?.map((eq) => (
-            <div key={eq} className="equation-block">
-              {eq}
-            </div>
-          ))}
-          {!topic.content && (
-            <>
-              <p className="hero-copy">
-                This section explains the core idea with intuition and math.
-              </p>
-              <div className="equation-block">f(x) = ax + b</div>
-              <div className="callout">Aha: Adjust coefficients to see slope change.</div>
-            </>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+          {dueReviews.length > 0 && (
+            <span className="review-due-badge">
+              🔄 {dueReviews.length} review{dueReviews.length > 1 ? "s" : ""}{" "}
+              due
+            </span>
           )}
-        </div>
-        <div>
-          <div className="section-title">Key Ideas</div>
-          <div className="card insert-block">
-            {topic.content?.keyIdeas ? (
-              <ul className="topic-list">
-                {topic.content.keyIdeas.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            ) : (
-              <p>Interactive widget placeholder</p>
-            )}
-          </div>
-          {topic.content?.references && (
-            <div className="callout">
-              Source: {topic.content.references.join(" • ")}
-            </div>
-          )}
+          <div className="page-header-sub">💰 {coins}</div>
         </div>
       </div>
 
-      <div className="section-block">
-        <div className="section-title">Assessment</div>
-        <div className="card">
-          <p>{topic.assessmentPrompt}</p>
-          <button className="btn-primary" onClick={() => completeTopic(topic.id)}>
-            Complete Topic
-          </button>
+      {topic.chapters.length === 0 ? (
+        <div className="card" style={{ textAlign: "center", padding: "2rem" }}>
+          <p>Chapters coming soon. Check back later!</p>
         </div>
-      </div>
+      ) : (
+        <div className="card-grid">
+          {topic.chapters.map((chapter) => {
+            const t1 = isChapterTierCompleted(chapter.id, 1);
+            const t2 = isChapterTierCompleted(chapter.id, 2);
+            const t3 = isChapterTierCompleted(chapter.id, 3);
+            const isDue = dueReviews.some((r) => r.chapterId === chapter.id);
 
-      <Link to={`/modules/${module.id}/levels/${level.id}`} className="btn-secondary">
-        Back to Chapters
+            return (
+              <Link
+                key={chapter.id}
+                to={`/modules/${module.id}/topics/${topic.id}/chapters/${chapter.id}`}
+                className={`card chapter-card${t1 && t2 && t3 ? " chapter-card--complete" : ""}`}
+              >
+                <h3>
+                  {chapter.title}
+                  {isDue && <span className="review-dot" title="Review due" />}
+                </h3>
+                <p>{chapter.description}</p>
+                <div className="chapter-card-tiers">
+                  <span className={`tier-dot${t1 ? " tier-dot--done" : ""}`}>
+                    🌱
+                  </span>
+                  <span className={`tier-dot${t2 ? " tier-dot--done" : ""}`}>
+                    ⚙️
+                  </span>
+                  <span className={`tier-dot${t3 ? " tier-dot--done" : ""}`}>
+                    🔬
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Project Card */}
+      {topic.project && (
+        <section style={{ marginTop: "2rem" }}>
+          <div className="section-title">🚀 Topic Project</div>
+          <ProjectCard
+            project={topic.project}
+            unlocked={allTier1Done}
+            completedChapters={
+              topic.chapters.filter((ch) => isChapterTierCompleted(ch.id, 1))
+                .length
+            }
+            totalChapters={topic.chapters.length}
+          />
+        </section>
+      )}
+
+      <Link
+        to={`/modules/${module.id}`}
+        className="btn-secondary"
+        style={{ marginTop: "1rem" }}
+      >
+        ← Back to Topics
       </Link>
     </div>
   );

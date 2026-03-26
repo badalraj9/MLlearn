@@ -77,28 +77,28 @@
 
 /* --- Dark Mode --- */
 .dark {
-  --bg-primary: #121214;
-  --bg-secondary: #1b1b20;
-  --bg-tertiary: #25252b;
+  --bg-primary: #1a1815;
+  --bg-secondary: #242120;
+  --bg-tertiary: #2e2a27;
 
-  --text-primary: #ededec;
-  --text-secondary: #b8b8b4;
-  --text-tertiary: #7a7a74;
+  --text-primary: #e8e4df;
+  --text-secondary: #a8a29e;
+  --text-tertiary: #78716c;
 
-  --accent-primary: #60a5fa;
-  --accent-hover: #93c5fd;
-  --accent-subtle: #1c2436;
-  --accent-gradient: linear-gradient(135deg, #60a5fa, #818cf8);
+  --accent-primary: #c9896d;
+  --accent-hover: #d9a283;
+  --accent-subtle: #2d2520;
+  --accent-gradient: linear-gradient(135deg, #c9896d, #b46a4c);
 
-  --border: #2f2f38;
+  --border: #3d3835;
 
-  --math-bg: #1a1a24;
+  --math-bg: #1e1b18;
 
-  --paper-edge: #1e1e24;
-  --paper-shadow: rgba(0, 0, 0, 0.35);
-  --binding-metal: #3a3a46;
-  --binding-dark: #2b2b36;
-  --ink-soft: rgba(237, 237, 236, 0.8);
+  --paper-edge: #1e1b18;
+  --paper-shadow: rgba(0, 0, 0, 0.4);
+  --binding-metal: #4a443f;
+  --binding-dark: #3d3835;
+  --ink-soft: rgba(232, 228, 223, 0.7);
 
   --success-subtle: #052e16;
   --warning-subtle: #2a1a00;
@@ -107,4 +107,82 @@
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.5);
+
+  /* Stage colors - slightly muted for dark */
+  --stage-foundations: #60a5fa;
+  --stage-foundations-bg: #1e293b;
+  --stage-core-ml: #a78bfa;
+  --stage-core-ml-bg: #2e1f3d;
+  --stage-deep-learning: #f87171;
+  --stage-deep-learning-bg: #3b1f1f;
+  --stage-research: #fbbf24;
+  --stage-research-bg: #3b2f1a;
+}
+
+/* --- Dark Mode Overrides (Components) --- */
+.dark .tier-sidebar {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 60%),
+    rgba(30, 30, 35, 0.4);
+}
+
+.dark .top-nav-links {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 70%),
+    rgba(30, 30, 35, 0.4);
+}
+
+.dark .book-shell::before {
+  background: linear-gradient(
+    90deg,
+    var(--paper-edge) 0%,
+    var(--bg-secondary) 8%,
+    var(--bg-secondary) 92%,
+    var(--paper-edge) 100%
+  );
+  display: block; /* Ensure it stays visible */
+}
+
+/* --- Scrollbar Customization --- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 999px;
+  border: 4px solid var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--border) 90%, transparent);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--border) 80%, transparent);
+  border-color: var(--bg-secondary);
+}
+
+.dark .tier-btn--active {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent),
+    color-mix(in srgb, var(--bg-tertiary) 85%, #fff);
+  border-color: color-mix(in srgb, var(--accent-primary) 35%, var(--border));
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.dark .tier-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+.dark .tier-sidebar-coins {
+  background: rgba(0, 0, 0, 0.2);
 }

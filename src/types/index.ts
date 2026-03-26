@@ -136,48 +136,117 @@ export interface LearningPath {
 
 // --- Modular Learning ---
 
-export type LearnerRank =
-  | "explorer"
-  | "apprentice"
-  | "practitioner"
-  | "specialist"
-  | "strategist"
-  | "expert"
-  | "visionary"
-  | "luminary";
+// Chapter depth tiers: 1=Foundation, 2=Applied, 3=Advanced
+export type ChapterTier = 1 | 2 | 3;
 
-export interface Topic {
-  id: string;
-  title: string;
-  summary: string;
-  assessmentPrompt: string;
-  content?: {
+export interface ChapterLevel {
+  tier: ChapterTier;
+  title: string; // "Foundation" | "Applied" | "Advanced"
+  cost: number; // coin cost to unlock (tier 1 = 0)
+  content: {
     intro: string[];
     keyIdeas: string[];
     equations?: string[];
     references?: string[];
+    ahaInsights?: string[]; // 💡 distinctive "aha moment" callouts
+    equationSteps?: EquationStep[]; // step-by-step derivation viewer
+    quiz?: QuizQuestion[]; // tier-specific quiz questions
   };
+  playground?: PlaygroundConfig; // interactive widget for this tier
+  codeContent?: CodeBlock; // code implementation of the same concept
+}
+
+export interface CodeBlock {
+  language: string; // "python" | "typescript" | etc.
+  code: string;
+  description?: string; // brief code explanation
+}
+
+// --- Playground Types ---
+
+export type PlaygroundType = "slider" | "equation" | "graph" | "code" | "widget";
+
+export interface SliderParam {
+  id: string;
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+  default: number;
+}
+
+export interface PlaygroundConfig {
+  type: PlaygroundType;
+  // Slider mode (Foundation): drag to change values, see graph update
+  sliders?: SliderParam[];
+  // Equation mode (Advanced): edit equation string, see graph redraw
+  equation?: string; // initial equation, e.g. "a * x^2 + b * x + c"
+  // Graph: function expression to visualize
+  graphFn?: string; // e.g. "sin(x * freq)" — uses mathjs syntax
+  // Code: editable code snippet
+  code?: string;
+  // X-axis range for graph
+  xRange?: [number, number];
+  yRange?: [number, number];
+  // Widget mode: render interactive widget by ID
+  widgetId?: string;
+}
+
+export interface EquationStep {
+  latex: string;
+  explanation: string;
+}
+
+// --- Quiz Types ---
+
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+}
+
+// --- Review Tracking ---
+
+export interface ReviewRecord {
+  chapterId: string;
+  lastReviewed: string; // ISO date
+  nextReview: string; // ISO date — computed from spaced repetition
+  streak: number; // consecutive correct reviews
 }
 
 export interface Chapter {
   id: string;
   title: string;
   description: string;
-  topics: Topic[];
+  prerequisites?: string[]; // chapter IDs that should be completed first
+  levels: ChapterLevel[]; // always 3 tiers
 }
 
-export interface Level {
-  id: LearnerRank;
+export interface Topic {
+  id: string;
   title: string;
   description: string;
   chapters: Chapter[];
+  project?: ProjectConfig; // unlockable mini-project after completing all chapters
+}
+
+export interface ProjectConfig {
+  id: string;
+  title: string;
+  description: string;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  objectives: string[];
+  starterCode?: string;
+  estimatedTime: string; // e.g. "2 hours"
 }
 
 export interface Module {
   id: string;
   title: string;
   description: string;
-  levels: Level[];
+  topics: Topic[];
 }
 
 // --- Progress ---
