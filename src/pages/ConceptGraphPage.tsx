@@ -1,281 +1,213 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useRef, useEffect } from "react";
 import * as d3 from "d3";
-import { concepts } from "@/content/concepts";
-import type { Stage } from "@/types";
+import { modules } from "@/content/modules";
+import { useLearningStore } from "@/store";
 
-interface GraphNode extends d3.SimulationNodeDatum {
+interface GraphNode {
   id: string;
   title: string;
-  slug: string;
-  stage: Stage;
-  ahaMoment: string;
+  moduleId: string;
+  x?: number;
+  y?: number;
 }
 
-interface GraphLink extends d3.SimulationLinkDatum<GraphNode> {
-  source: string | GraphNode;
-  target: string | GraphNode;
+interface GraphLink {
+  source: string;
+  target: string;
 }
 
-const stageColors: Record<Stage, string> = {
-  foundations: "#2563EB",
-  "core-ml": "#7C3AED",
-  "deep-learning": "#DC2626",
-  research: "#D97706",
+const MODULE_COLORS: Record<string, string> = {
+  math: "#A0522D",
+  "ml-theory": "#2f5b7c",
+  "deep-learning": "#6B3FA0",
+  generative: "#C2185B",
+  "applied-ml": "#2E7D32",
+  "deep-research": "#E65100",
 };
 
 export default function ConceptGraphPage() {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
-  const [tooltip, setTooltip] = useState<{
-    x: number;
-    y: number;
-    title: string;
-    aha: string;
-  } | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const { isChapterTierCompleted } = useLearningStore();
+
+  const { nodes, links } = useMemo(() => {
+    const graphNodes: GraphNode[] = [];
+    const graphLinks: GraphLink[] = [];
+
+    for (const mod of modules) {
+      for (const topic of mod.topics) {
+        for (const chapter of topic.chapters) {
+          graphNodes.push({
+            id: chapter.id,
+            title: chapter.title,
+            moduleId: mod.id,
+          });
+          if (chapter.prerequisites) {
+            for (const prereqId of chapter.prerequisites) {
+              graphLinks.push({ source: prereqId, target: chapter.id });
+            }
+          }
+        }
+      }
+    }
+
+    return { nodes: graphNodes, links: graphLinks };
+  }, []);
 
   useEffect(() => {
-    if (!svgRef.current || !containerRef.current) return;
+    if (!svgRef.current) return;
 
-    const container = containerRef.current;
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    const width = 900;
+    const height = 560;
 
-    // Build nodes and links
-    const allConceptIds = new Set(concepts.map((c) => c.id));
-    const nodes: GraphNode[] = concepts.map((c) => ({
-      id: c.id,
-      title: c.title,
-      slug: c.slug,
-      stage: c.stage,
-      ahaMoment: c.ahaMoment,
-    }));
+    const svg = d3.select(svgRef.current);
+    svg.selectAll("*").remove();
 
-    const links: GraphLink[] = [];
-    concepts.forEach((concept) => {
-      concept.prerequisites.forEach((prereqId) => {
-        if (allConceptIds.has(prereqId)) {
-          links.push({ source: prereqId, target: concept.id });
-        }
-      });
-    });
-
-    // Clear previous
-    d3.select(svgRef.current).selectAll("*").remove();
-
-    const svg = d3
-      .select(svgRef.current)
-      .attr("width", width)
-      .attr("height", height);
-
-    // Arrow marker
     svg
-      .append("defs")
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("width", "100%")
+      .attr("height", "100%");
+
+    // Zoom & pan
+    const g = svg.append("g");
+    svg.call(
+      d3
+        .zoom<SVGSVGElement, unknown>()
+        .scaleExtent([0.2, 3])
+        .on("zoom", (event) => {
+          g.attr("transform", event.transform);
+        }) as any,
+    );
+
+    // Arrow marker for directed edges
+    g.append("defs")
       .append("marker")
-      .attr("id", "arrowhead")
+      .attr("id", "arrow")
       .attr("viewBox", "0 -5 10 10")
-      .attr("refX", 25)
+      .attr("refX", 18)
       .attr("refY", 0)
       .attr("markerWidth", 6)
       .attr("markerHeight", 6)
       .attr("orient", "auto")
       .append("path")
       .attr("d", "M0,-5L10,0L0,5")
-      .attr("fill", "#999");
+      .attr("fill", "rgba(94, 68, 45, 0.3)");
 
-    // Zoom
-    const g = svg.append("g");
-    svg.call(
-      d3
-        .zoom<SVGSVGElement, unknown>()
-        .scaleExtent([0.3, 3])
-        .on("zoom", (event) => {
-          g.attr("transform", event.transform);
-        }) as any,
+    // Create link elements
+    const validLinks = links.filter(
+      (l) =>
+        nodes.some((n) => n.id === l.source) &&
+        nodes.some((n) => n.id === l.target),
     );
 
-    // Simulation
-    const simulation = d3
-      .forceSimulation(nodes)
-      .force(
-        "link",
-        d3
-          .forceLink<GraphNode, GraphLink>(links)
-          .id((d) => d.id)
-          .distance(120),
-      )
-      .force("charge", d3.forceManyBody().strength(-300))
-      .force("center", d3.forceCenter(width / 2, height / 2))
-      .force("collision", d3.forceCollide().radius(40));
-
-    // Links
     const link = g
       .append("g")
       .selectAll("line")
-      .data(links)
-      .enter()
-      .append("line")
-      .attr("stroke", "#999")
-      .attr("stroke-opacity", 0.4)
+      .data(validLinks)
+      .join("line")
+      .attr("stroke", "rgba(94, 68, 45, 0.2)")
       .attr("stroke-width", 1.5)
-      .attr("marker-end", "url(#arrowhead)");
+      .attr("marker-end", "url(#arrow)");
 
-    // Nodes
+    // Create node groups
     const node = g
       .append("g")
       .selectAll("g")
       .data(nodes)
-      .enter()
-      .append("g")
-      .style("cursor", "pointer")
+      .join("g")
       .call(
         d3
-          .drag<SVGGElement, GraphNode>()
-          .on("start", (event, d) => {
+          .drag<any, GraphNode>()
+          .on("start", (event, d: any) => {
             if (!event.active) simulation.alphaTarget(0.3).restart();
             d.fx = d.x;
             d.fy = d.y;
           })
-          .on("drag", (event, d) => {
+          .on("drag", (event, d: any) => {
             d.fx = event.x;
             d.fy = event.y;
           })
-          .on("end", (event, d) => {
+          .on("end", (event, d: any) => {
             if (!event.active) simulation.alphaTarget(0);
             d.fx = null;
             d.fy = null;
-          }) as any,
+          }),
       );
 
     // Node circles
     node
       .append("circle")
-      .attr("r", 16)
-      .attr("fill", (d) => stageColors[d.stage])
-      .attr("stroke", "white")
-      .attr("stroke-width", 2)
-      .style("transition", "r 100ms ease");
+      .attr("r", 8)
+      .attr("fill", (d) => MODULE_COLORS[d.moduleId] || "#5a5149")
+      .attr("stroke", (d) =>
+        isChapterTierCompleted(d.id, 1) ? "#2E7D32" : "rgba(255,255,255,0.7)",
+      )
+      .attr("stroke-width", (d) => (isChapterTierCompleted(d.id, 1) ? 3 : 1.5))
+      .attr("opacity", (d) => (isChapterTierCompleted(d.id, 1) ? 1 : 0.7));
 
     // Node labels
     node
       .append("text")
-      .text((d) => d.title)
-      .attr("dy", 30)
+      .text((d) => (d.title.length > 20 ? d.title.slice(0, 18) + "…" : d.title))
+      .attr("font-size", 9)
+      .attr("fill", "#5a5149")
       .attr("text-anchor", "middle")
-      .attr("font-size", "11px")
-      .attr("font-family", "Inter, system-ui, sans-serif")
-      .attr("fill", "#4A4A4A");
+      .attr("dy", 20)
+      .attr("font-family", "'Source Sans 3', sans-serif");
 
-    // Hover
-    node
-      .on("mouseenter", (event, d) => {
-        d3.select(event.currentTarget).select("circle").attr("r", 20);
-        const rect = container.getBoundingClientRect();
-        setTooltip({
-          x: event.clientX - rect.left,
-          y: event.clientY - rect.top - 60,
-          title: d.title,
-          aha: d.ahaMoment,
-        });
-      })
-      .on("mouseleave", (event) => {
-        d3.select(event.currentTarget).select("circle").attr("r", 16);
-        setTooltip(null);
-      })
-      .on("click", (_, d) => {
-        navigate(`/concepts/${d.slug}`);
-      });
+    // Force simulation
+    const simulation = d3
+      .forceSimulation(nodes as any)
+      .force(
+        "link",
+        d3
+          .forceLink(validLinks as any)
+          .id((d: any) => d.id)
+          .distance(80),
+      )
+      .force("charge", d3.forceManyBody().strength(-120))
+      .force("center", d3.forceCenter(width / 2, height / 2))
+      .force("collision", d3.forceCollide(30));
 
-    // Tick
     simulation.on("tick", () => {
       link
         .attr("x1", (d: any) => d.source.x)
         .attr("y1", (d: any) => d.source.y)
         .attr("x2", (d: any) => d.target.x)
         .attr("y2", (d: any) => d.target.y);
-
-      node.attr("transform", (d) => `translate(${d.x},${d.y})`);
+      node.attr("transform", (d: any) => `translate(${d.x},${d.y})`);
     });
 
     return () => {
       simulation.stop();
     };
-  }, [navigate]);
+  }, [nodes, links, isChapterTierCompleted]);
 
   return (
-    <div className="animate-fade-in">
-      <h1
-        className="text-3xl font-bold mb-2"
-        style={{
-          fontFamily: "var(--font-heading)",
-          color: "var(--text-primary)",
-        }}
-      >
-        Concept Graph
-      </h1>
-      <p className="text-sm mb-6" style={{ color: "var(--text-secondary)" }}>
-        Explore how concepts connect. Drag nodes, zoom, and click to navigate.
-      </p>
+    <div className="page-content stagger-in">
+      <div className="page-header">
+        <div>
+          <h1 className="page-header-title">Concept Graph</h1>
+          <p className="page-header-sub">
+            Explore how chapters connect. Drag nodes, scroll to zoom. Completed
+            chapters show green borders.
+          </p>
+        </div>
+      </div>
 
-      {/* Legend */}
-      <div className="flex items-center gap-4 mb-4 flex-wrap">
-        {Object.entries(stageColors).map(([stage, color]) => (
-          <div key={stage} className="flex items-center gap-2 text-xs">
-            <div
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: color }}
-            />
-            <span
-              className="capitalize"
-              style={{ color: "var(--text-tertiary)" }}
-            >
-              {stage.replace("-", " ")}
-            </span>
+      <div className="graph-legend">
+        {Object.entries(MODULE_COLORS).map(([id, color]) => (
+          <div key={id} className="graph-legend-item">
+            <span className="graph-legend-dot" style={{ background: color }} />
+            <span>{id}</span>
           </div>
         ))}
       </div>
 
-      {/* Graph Container */}
       <div
-        ref={containerRef}
-        className="relative rounded-lg overflow-hidden"
-        style={{
-          height: "500px",
-          backgroundColor: "var(--bg-secondary)",
-          border: "1px solid var(--border)",
-        }}
+        className="card insert-block"
+        style={{ height: "580px", padding: 0, overflow: "hidden" }}
       >
-        <svg ref={svgRef} className="w-full h-full" />
-
-        {/* Tooltip */}
-        {tooltip && (
-          <div
-            className="absolute px-3 py-2 rounded-lg text-sm pointer-events-none animate-fade-in"
-            style={{
-              left: tooltip.x,
-              top: tooltip.y,
-              backgroundColor: "var(--bg-primary)",
-              border: "1px solid var(--border)",
-              boxShadow: "var(--shadow-md)",
-              maxWidth: "250px",
-              transform: "translateX(-50%)",
-            }}
-          >
-            <div
-              className="font-medium"
-              style={{ color: "var(--text-primary)" }}
-            >
-              {tooltip.title}
-            </div>
-            <div
-              className="text-xs italic mt-1"
-              style={{ color: "var(--text-tertiary)" }}
-            >
-              {tooltip.aha}
-            </div>
-          </div>
-        )}
+        <svg ref={svgRef} />
       </div>
     </div>
   );
