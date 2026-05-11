@@ -7,9 +7,6 @@ interface EquationPlaygroundProps {
   yRange?: [number, number];
 }
 
-/**
- * Parse and evaluate a math expression safely.
- */
 function parseEquation(expr: string): (x: number) => number {
   return (x: number) => {
     try {
@@ -47,7 +44,7 @@ export default function EquationPlayground({
         if (error) setError(null);
         return result;
       } catch (e) {
-        setError(String(e));
+        setError("invalid");
         return NaN;
       }
     },
@@ -55,28 +52,43 @@ export default function EquationPlayground({
   );
 
   return (
-    <div className="playground-container">
-      <div className="playground-header">
-        <span className="playground-badge">🔬 Equation Editor</span>
-      </div>
-
-      <div className="playground-equation-input">
-        <label className="playground-equation-label">y =</label>
+    <div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          marginBottom: "0.75rem",
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.75rem",
+            color: "var(--text-tertiary)",
+          }}
+        >
+          y =
+        </span>
         <input
           type="text"
           value={equation}
           onChange={(e) => setEquation(e.target.value)}
-          className="playground-equation-field"
+          style={{
+            flex: 1,
+            background: "transparent",
+            border: "none",
+            borderBottom: error ? "1px solid var(--error)" : "1px solid var(--border)",
+            padding: "2px 4px",
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.85rem",
+            color: "var(--text-primary)",
+            outline: "none",
+          }}
           placeholder="e.g. sin(x) * 2 + cos(x^2)"
           spellCheck={false}
         />
       </div>
-
-      {error && (
-        <div className="playground-error">
-          ⚠️ Invalid equation — check your syntax
-        </div>
-      )}
 
       <GraphPlayground
         fn={evalFn}
@@ -86,10 +98,16 @@ export default function EquationPlayground({
         label={`y = ${equation}`}
       />
 
-      <div className="playground-equation-hints">
-        <span>Functions: sin, cos, tan, sqrt, exp, log, abs</span>
-        <span>Constants: pi</span>
-        <span>Power: x^2</span>
+      <div
+        style={{
+          marginTop: "0.5rem",
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.65rem",
+          color: "var(--text-tertiary)",
+          letterSpacing: "0.02em",
+        }}
+      >
+        sin · cos · tan · sqrt · exp · log · abs · pi
       </div>
     </div>
   );

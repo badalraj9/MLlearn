@@ -1,172 +1,138 @@
 import { Link } from "react-router-dom";
 import { modules } from "@/content/modules";
-import { 
-  BookOpen, ArrowRight, Calculator, Brain, Cpu, 
-  Zap, Microscope, Target, CheckCircle 
-} from "lucide-react";
-
-const moduleIcons: Record<string, React.ReactNode> = {
-  math: <Calculator size={18} />,
-  "ml-theory": <Brain size={18} />,
-  "deep-learning": <Cpu size={18} />,
-  generative: <Zap size={18} />,
-  "deep-research": <Microscope size={18} />,
-  "applied-ml": <Target size={18} />,
-};
 
 export default function IntroPage() {
   return (
     <div className="page-content stagger-in">
-      {/* Page Header */}
-      <div className="page-header">
-        <div className="page-header-icon">
-          <BookOpen size={16} />
-        </div>
-        <div>
-          <h1 className="page-header-title">About MLearn</h1>
-          <p className="page-header-sub">
-            Curriculum and learning paths.
-          </p>
-        </div>
-      </div>
+      <header style={{ marginBottom: "5rem", marginTop: "3rem" }}>
+        <h1 style={{ 
+          fontFamily: "var(--font-heading)", 
+          fontSize: "clamp(2rem, 4vw, 3rem)",
+          fontWeight: 400,
+          marginBottom: "1rem",
+          lineHeight: 1.1
+        }}>
+          About
+        </h1>
+        <p style={{ 
+          fontFamily: "var(--font-body)",
+          color: "var(--text-secondary)", 
+          maxWidth: "50ch",
+          lineHeight: 1.8,
+          fontSize: "0.95rem",
+          margin: 0
+        }}>
+          An environment for understanding the mathematical foundations of machine learning through rigorous proofs, geometric intuition, and research paper analysis.
+        </p>
+      </header>
 
-      <div className="toc-block">
-        <div className="toc-title">On This Page</div>
-        <div className="toc-list">
-          <span>Curriculum</span>
-          <span>Beginner Path</span>
-          <span>Experienced Path</span>
+      <section style={{ marginBottom: "4rem" }}>
+        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-tertiary)", marginBottom: "1.5rem" }}>
+          Learning Paths
+        </p>
+        <div style={{ borderTop: "1px solid var(--border)" }}>
+          {modules.map((mod, idx) => (
+            <div
+              key={mod.id}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "3rem 1fr auto",
+                gap: "1.5rem",
+                padding: "1.5rem 0",
+                borderBottom: "1px solid var(--border)",
+                alignItems: "start",
+              }}
+            >
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--text-tertiary)", paddingTop: "4px" }}>
+                {String(idx + 1).padStart(2, '0')}
+              </span>
+              <div>
+                <Link
+                  to={`/modules/${mod.id}`}
+                  style={{ fontFamily: "var(--font-heading)", fontSize: "1rem", fontWeight: 400, color: "var(--text-primary)", textDecoration: "none" }}
+                >
+                  {mod.title}
+                </Link>
+                <p style={{ fontFamily: "var(--font-body)", fontSize: "0.8rem", color: "var(--text-tertiary)", marginTop: "0.25rem", marginBottom: 0 }}>
+                  {mod.description}
+                </p>
+              </div>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--text-tertiary)", paddingTop: "4px" }}>
+                {mod.topics?.length || 0}
+              </span>
+            </div>
+          ))}
         </div>
-      </div>
+      </section>
 
-      <div className="section-divider" aria-hidden="true" />
-
-      {/* Curriculum - Simple List */}
-      <section className="section-block">
-        <div className="section-title">Curriculum</div>
-        <div className="card">
-          <table className="w-full text-sm">
-            <thead>
-              <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                <th className="text-left py-2 font-medium" style={{ color: "var(--text-primary)" }}>Path</th>
-                <th className="text-left py-2 font-medium" style={{ color: "var(--text-primary)" }}>Description</th>
-                <th className="text-right py-2 font-medium" style={{ color: "var(--text-primary)" }}>Topics</th>
-              </tr>
-            </thead>
-            <tbody>
-              {modules.map((mod, idx) => (
-                <tr key={mod.id} style={{ borderBottom: "1px solid var(--border)" }}>
-                  <td className="py-2 pr-4">
-                    <Link 
-                      to={`/modules/${mod.id}`}
-                      className="flex items-center gap-2 hover:underline"
-                      style={{ color: "var(--accent-primary)" }}
-                    >
-                      {moduleIcons[mod.id] || <BookOpen size={14} />}
-                      <span className="font-medium">{mod.title}</span>
-                    </Link>
-                  </td>
-                  <td className="py-2 pr-4" style={{ color: "var(--text-secondary)" }}>
-                    {mod.description}
-                  </td>
-                  <td className="py-2 text-right" style={{ color: "var(--text-tertiary)" }}>
-                    {mod.topics?.length || 0}
-                  </td>
-                </tr>
+      <section style={{ marginBottom: "4rem" }}>
+        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-tertiary)", marginBottom: "1.5rem" }}>
+          Approach
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", borderTop: "1px solid var(--border)", paddingTop: "2rem" }}>
+          <div>
+            <p style={{ fontFamily: "var(--font-heading)", fontSize: "1rem", fontWeight: 500, color: "var(--text-primary)", marginBottom: "0.5rem" }}>
+              Sequence: Beginner
+            </p>
+            <ol style={{ paddingLeft: "1.25rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {["Mathematical Foundations", "ML Theory", "Deep Learning", "Generative Models"].map((item, i) => (
+                <li key={i} style={{ fontFamily: "var(--font-body)", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-tertiary)", marginRight: "8px" }}>{String(i + 1).padStart(2, '0')}</span>
+                  {item}
+                </li>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <div className="section-divider" aria-hidden="true" />
-
-      {/* Beginner Path */}
-      <section className="section-block">
-        <div className="section-title">Recommended: Beginners</div>
-        <div className="card">
-          <p className="mb-4" style={{ color: "var(--text-secondary)" }}>
-            If you're new to machine learning mathematics, follow this sequence:
-          </p>
-          <ol className="space-y-2 list-decimal list-inside">
-            <li className="py-1" style={{ color: "var(--text-primary)" }}>
-              <strong>Math Foundations</strong> — Linear algebra, calculus, probability, optimization
-            </li>
-            <li className="py-1" style={{ color: "var(--text-primary)" }}>
-              <strong>ML Theory</strong> — Bias-variance, generalization, loss landscapes
-            </li>
-            <li className="py-1" style={{ color: "var(--text-primary)" }}>
-              <strong>Deep Learning</strong> — Neural networks, backpropagation, optimization
-            </li>
-            <li className="py-1" style={{ color: "var(--text-primary)" }}>
-              <strong>Generative</strong> — VAEs, diffusion models, LLMs
-            </li>
-          </ol>
-        </div>
-      </section>
-
-      <div className="section-divider" aria-hidden="true" />
-
-      {/* Experienced Path */}
-      <section className="section-block">
-        <div className="section-title">Recommended: Experienced</div>
-        <div className="card">
-          <p className="mb-4" style={{ color: "var(--text-secondary)" }}>
-            If you already know the math fundamentals:
-          </p>
-          <ol className="space-y-2 list-decimal list-inside">
-            <li className="py-1" style={{ color: "var(--text-primary)" }}>
-              <strong>ML Theory</strong> — Skip straight to core concepts
-            </li>
-            <li className="py-1" style={{ color: "var(--text-primary)" }}>
-              <strong>Deep Learning</strong> — Build neural network intuition
-            </li>
-            <li className="py-1" style={{ color: "var(--text-primary)" }}>
-              <strong>Research</strong> — Paper deconstructions
-            </li>
-            <li className="py-1" style={{ color: "var(--text-primary)" }}>
-              <strong>Applied ML</strong> — Real-world implementations
-            </li>
-          </ol>
-        </div>
-      </section>
-
-      <div className="section-divider" aria-hidden="true" />
-
-      {/* How It Works - Minimal */}
-      <section className="section-block">
-        <div className="section-title">How It Works</div>
-        <div className="card-grid">
-          <div className="card">
-            <h3 className="font-medium mb-1">Read & Learn</h3>
-            <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-              Progress through chapters with interactive visualizations and MathJax equations.
-            </p>
+            </ol>
           </div>
-          <div className="card">
-            <h3 className="font-medium mb-1">Practice</h3>
-            <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-              Complete exercises and quizzes to reinforce understanding.
+          <div>
+            <p style={{ fontFamily: "var(--font-heading)", fontSize: "1rem", fontWeight: 500, color: "var(--text-primary)", marginBottom: "0.5rem" }}>
+              Sequence: Experienced
             </p>
-          </div>
-          <div className="card">
-            <h3 className="font-medium mb-1">Earn & Unlock</h3>
-            <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-              Complete assessments to earn coins and unlock deeper topics.
-            </p>
+            <ol style={{ paddingLeft: "1.25rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              {["ML Theory", "Deep Learning", "Research Papers", "Applied ML"].map((item, i) => (
+                <li key={i} style={{ fontFamily: "var(--font-body)", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-tertiary)", marginRight: "8px" }}>{String(i + 1).padStart(2, '0')}</span>
+                  {item}
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       </section>
 
-      <div className="section-divider" aria-hidden="true" />
+      <section style={{ marginBottom: "4rem" }}>
+        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-tertiary)", marginBottom: "1.5rem" }}>
+          Structure
+        </p>
+        <div style={{ borderTop: "1px solid var(--border)", paddingTop: "1.5rem" }}>
+          {[
+            { label: "I. Foundation", desc: "Core definitions, theorems, and first principles" },
+            { label: "II. Applied", desc: "Computational implications and practical extensions" },
+            { label: "III. Advanced", desc: "Research-grade depth and theoretical generalizations" },
+          ].map(({ label, desc }) => (
+            <div key={label} style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "1.5rem", padding: "1rem 0", borderBottom: "1px solid var(--border)" }}>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--text-tertiary)", paddingTop: "2px" }}>{label}</span>
+              <span style={{ fontFamily: "var(--font-body)", fontSize: "0.85rem", color: "var(--text-secondary)" }}>{desc}</span>
+            </div>
+          ))}
+        </div>
+      </section>
 
-      {/* CTA */}
-      <section className="section-block text-center">
-        <Link to="/modules" className="btn-primary inline-flex items-center gap-2">
-          Browse Curriculum
-          <ArrowRight size={16} />
+      <div style={{ marginTop: "3rem", borderTop: "1px solid var(--border)", paddingTop: "2rem" }}>
+        <Link
+          to="/modules"
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.8rem",
+            color: "var(--text-tertiary)",
+            textDecoration: "none",
+            letterSpacing: "0.04em",
+            borderBottom: "1px solid var(--border)",
+            paddingBottom: "2px",
+          }}
+        >
+          begin reading
         </Link>
-      </section>
+      </div>
     </div>
   );
 }

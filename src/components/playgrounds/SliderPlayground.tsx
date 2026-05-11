@@ -9,17 +9,12 @@ interface SliderPlaygroundProps {
   yRange?: [number, number];
 }
 
-/**
- * Safely evaluates a math expression with variables.
- * Uses simple tokenized evaluation — no eval().
- */
 function safeMathEval(
   expr: string,
   vars: Record<string, number>,
 ): (x: number) => number {
   return (x: number) => {
     try {
-      // Replace variable names with values, longest first to avoid partial matches
       let e = expr;
       const allVars: Record<string, number> = { ...vars, x };
       const sortedKeys = Object.keys(allVars).sort(
@@ -28,7 +23,6 @@ function safeMathEval(
       for (const key of sortedKeys) {
         e = e.replace(new RegExp(`\\b${key}\\b`, "g"), `(${allVars[key]})`);
       }
-      // Replace math functions
       e = e.replace(/sin\(/g, "Math.sin(");
       e = e.replace(/cos\(/g, "Math.cos(");
       e = e.replace(/tan\(/g, "Math.tan(");
@@ -69,11 +63,7 @@ export default function SliderPlayground({
   );
 
   return (
-    <div className="playground-container">
-      <div className="playground-header">
-        <span className="playground-badge">🌱 Interactive</span>
-      </div>
-
+    <div>
       {graphFn && (
         <GraphPlayground
           fn={evalFn}
@@ -84,10 +74,28 @@ export default function SliderPlayground({
         />
       )}
 
-      <div className="playground-sliders">
+      <div style={{ marginTop: "1rem" }}>
         {sliders.map((s) => (
-          <div key={s.id} className="playground-slider-row">
-            <label className="playground-slider-label">{s.label}</label>
+          <div
+            key={s.id}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "60px 1fr 56px",
+              alignItems: "center",
+              gap: "12px",
+              padding: "4px 0",
+            }}
+          >
+            <label
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.75rem",
+                color: "var(--text-secondary)",
+                letterSpacing: "0.02em",
+              }}
+            >
+              {s.label}
+            </label>
             <input
               type="range"
               min={s.min}
@@ -95,9 +103,20 @@ export default function SliderPlayground({
               step={s.step}
               value={params[s.id]}
               onChange={(e) => updateParam(s.id, parseFloat(e.target.value))}
-              className="playground-slider-input"
+              style={{
+                accentColor: "var(--accent-primary)",
+                width: "100%",
+                cursor: "pointer",
+              }}
             />
-            <span className="playground-slider-value">
+            <span
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.7rem",
+                color: "var(--text-tertiary)",
+                textAlign: "right",
+              }}
+            >
               {params[s.id].toFixed(2)}
             </span>
           </div>
@@ -105,12 +124,25 @@ export default function SliderPlayground({
       </div>
 
       {!graphFn && (
-        <div className="playground-output">
+        <div
+          style={{
+            marginTop: "0.75rem",
+            display: "flex",
+            gap: "16px",
+            flexWrap: "wrap",
+          }}
+        >
           {Object.entries(params).map(([k, v]) => (
-            <div key={k} className="playground-output-item">
-              <span>{k}</span>
-              <strong>{v.toFixed(3)}</strong>
-            </div>
+            <span
+              key={k}
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.7rem",
+                color: "var(--text-tertiary)",
+              }}
+            >
+              {k}: {v.toFixed(3)}
+            </span>
           ))}
         </div>
       )}

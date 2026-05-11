@@ -53,17 +53,7 @@ export default function SettingsPage({ supabase }: SettingsPageProps) {
       </div>
 
       {/* Table of Contents */}
-      <div className="toc-block">
-        <div className="toc-title">On This Page</div>
-        <div className="toc-list">
-          <span>Appearance</span>
-          <span>Reading Preferences</span>
-          <span>Account</span>
-          <span>Data Management</span>
-        </div>
-      </div>
-
-      <div className="section-divider" aria-hidden="true" />
+      
 
       {/* Appearance Section */}
       <section className="section-block">

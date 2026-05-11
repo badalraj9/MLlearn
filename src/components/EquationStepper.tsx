@@ -12,7 +12,7 @@ export default function EquationStepper({ steps }: EquationStepperProps) {
   return (
     <div className="equation-stepper">
       <div className="equation-stepper-header">
-        <span className="playground-badge">📐 Step-by-Step</span>
+        <span className="equation-stepper-label">Derivation</span>
         <span className="equation-stepper-count">
           {current + 1} / {steps.length}
         </span>

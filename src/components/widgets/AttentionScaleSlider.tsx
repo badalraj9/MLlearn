@@ -1,31 +1,21 @@
 import { useState, useMemo } from "react";
 
-/**
- * Demonstrates how scaling by √d_k affects the softmax distribution.
- * Without scaling, large d_k makes dot products huge → softmax becomes one-hot → vanishing gradients.
- */
 export default function AttentionScaleSlider() {
   const [dk, setDk] = useState(64);
 
-  // Simulate 5 attention scores (dot products) that scale with √d_k
   const result = useMemo(() => {
-    // Raw dot products scale proportional to √d_k in magnitude
     const rawScores = [1.0, 0.8, 0.3, -0.2, -0.5].map((s) => s * Math.sqrt(dk));
-
-    // Unscaled softmax
     const unscaledMax = Math.max(...rawScores);
     const unscaledExp = rawScores.map((s) => Math.exp(s - unscaledMax));
     const unscaledSum = unscaledExp.reduce((a, b) => a + b, 0);
     const unscaled = unscaledExp.map((e) => e / unscaledSum);
 
-    // Scaled softmax (divide by √d_k)
     const scaledScores = rawScores.map((s) => s / Math.sqrt(dk));
     const scaledMax = Math.max(...scaledScores);
     const scaledExp = scaledScores.map((s) => Math.exp(s - scaledMax));
     const scaledSum = scaledExp.reduce((a, b) => a + b, 0);
     const scaled = scaledExp.map((e) => e / scaledSum);
 
-    // Entropy (measure of how spread the distribution is)
     const entropy = (probs: number[]) =>
       -probs.reduce((s, p) => s + (p > 1e-10 ? p * Math.log2(p) : 0), 0);
 
@@ -37,139 +27,99 @@ export default function AttentionScaleSlider() {
     };
   }, [dk]);
 
-  const labels = ["Token 1", "Token 2", "Token 3", "Token 4", "Token 5"];
+  const tokens = ["q_1", "q_2", "q_3", "q_4", "q_5"];
 
   return (
     <div>
-      {/* Slider */}
-      <div className="flex items-center gap-4 mb-6">
-        <label
-          className="text-sm font-medium whitespace-nowrap"
-          style={{
-            color: "var(--text-primary)",
-            fontFamily: "var(--font-mono)",
-          }}
-        >
+      <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "1.5rem" }}>
+        <label style={{ fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
           d_k = {dk}
         </label>
         <input
-          type="range"
-          min={1}
-          max={512}
-          value={dk}
-          onChange={(e) => setDk(Number(e.target.value))}
-          className="flex-1"
-          style={{ accentColor: "var(--accent-primary)" }}
+          type="range" min={1} max={512} step={1}
+          value={dk} onChange={(e) => setDk(Number(e.target.value))}
+          style={{ flex: 1, accentColor: "var(--accent-primary)" }}
         />
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-tertiary)", width: "36px", textAlign: "right" }}>
+          sqrt = {Math.sqrt(dk).toFixed(1)}
+        </span>
       </div>
 
-      {/* Two distributions side by side */}
-      <div className="grid grid-cols-2 gap-6">
-        {/* Unscaled */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
         <div>
-          <h4
-            className="text-xs font-semibold mb-3 uppercase tracking-wide"
-            style={{ color: "var(--error)" }}
-          >
-            Without scaling
-          </h4>
-          <div className="flex flex-col gap-2">
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.75rem" }}>
+            raw attention
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             {result.unscaled.map((p, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <span
-                  className="text-xs w-14 shrink-0"
-                  style={{
-                    color: "var(--text-tertiary)",
-                    fontFamily: "var(--font-mono)",
-                  }}
-                >
-                  {labels[i]}
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-tertiary)", width: "20px" }}>
+                  {tokens[i]}
                 </span>
-                <div
-                  className="h-5 rounded-sm transition-all duration-200"
-                  style={{
+                <div style={{ flex: 1, height: "2px", background: "var(--border)", position: "relative" }}>
+                  <div style={{
+                    position: "absolute", left: 0, top: 0, height: "100%",
                     width: `${Math.max(p * 100, 1)}%`,
-                    backgroundColor: "var(--error)",
-                    opacity: 0.4 + p * 0.6,
-                  }}
-                />
-                <span
-                  className="text-xs w-12 text-right shrink-0"
-                  style={{
-                    color: "var(--text-tertiary)",
-                    fontFamily: "var(--font-mono)",
-                  }}
-                >
-                  {(p * 100).toFixed(1)}%
+                    background: "var(--text-secondary)",
+                    opacity: 0.35 + p * 0.65,
+                  }} />
+                </div>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-tertiary)", width: "40px", textAlign: "right" }}>
+                  {p.toFixed(3)}
                 </span>
               </div>
             ))}
           </div>
-          <p className="text-xs mt-2" style={{ color: "var(--text-tertiary)" }}>
-            Entropy: {result.entropyUnscaled.toFixed(2)} bits
+          <p style={{ marginTop: "0.5rem", fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-tertiary)" }}>
+            H = {result.entropyUnscaled.toFixed(2)} bits
           </p>
         </div>
 
-        {/* Scaled */}
         <div>
-          <h4
-            className="text-xs font-semibold mb-3 uppercase tracking-wide"
-            style={{ color: "var(--success)" }}
-          >
-            With √d_k scaling
-          </h4>
-          <div className="flex flex-col gap-2">
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.75rem" }}>
+            / sqrt(d_k)
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             {result.scaled.map((p, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <span
-                  className="text-xs w-14 shrink-0"
-                  style={{
-                    color: "var(--text-tertiary)",
-                    fontFamily: "var(--font-mono)",
-                  }}
-                >
-                  {labels[i]}
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-tertiary)", width: "20px" }}>
+                  {tokens[i]}
                 </span>
-                <div
-                  className="h-5 rounded-sm transition-all duration-200"
-                  style={{
+                <div style={{ flex: 1, height: "2px", background: "var(--border)", position: "relative" }}>
+                  <div style={{
+                    position: "absolute", left: 0, top: 0, height: "100%",
                     width: `${Math.max(p * 100, 1)}%`,
-                    backgroundColor: "var(--success)",
-                    opacity: 0.4 + p * 0.6,
-                  }}
-                />
-                <span
-                  className="text-xs w-12 text-right shrink-0"
-                  style={{
-                    color: "var(--text-tertiary)",
-                    fontFamily: "var(--font-mono)",
-                  }}
-                >
-                  {(p * 100).toFixed(1)}%
+                    background: "var(--text-secondary)",
+                    opacity: 0.35 + p * 0.65,
+                  }} />
+                </div>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-tertiary)", width: "40px", textAlign: "right" }}>
+                  {p.toFixed(3)}
                 </span>
               </div>
             ))}
           </div>
-          <p className="text-xs mt-2" style={{ color: "var(--text-tertiary)" }}>
-            Entropy: {result.entropyScaled.toFixed(2)} bits
+          <p style={{ marginTop: "0.5rem", fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-tertiary)" }}>
+            H = {result.entropyScaled.toFixed(2)} bits
           </p>
         </div>
       </div>
 
-      {/* Insight callout */}
-      <div
-        className="mt-6 px-4 py-3 rounded-md text-xs"
-        style={{
-          backgroundColor: "var(--math-bg)",
-          borderLeft: "3px solid var(--warning)",
-          color: "var(--text-secondary)",
-        }}
-      >
+      <div style={{
+        marginTop: "1rem",
+        paddingLeft: "0.75rem",
+        borderLeft: "1px solid var(--border)",
+        fontFamily: "var(--font-mono)",
+        fontSize: "0.7rem",
+        color: "var(--text-tertiary)",
+        fontStyle: "italic",
+        lineHeight: 1.6,
+      }}>
         {dk > 100
-          ? "⚠️ At high d_k, the unscaled softmax is nearly one-hot — gradients vanish and the model can't learn which tokens to attend to."
+          ? "large d_k: softmax becomes one-hot, gradients vanish"
           : dk < 10
-            ? "✅ At low d_k, both distributions are similar — scaling barely matters."
-            : "👀 Notice how the unscaled distribution is sharper — the model is forced to put all weight on one token."}
+            ? "small d_k: both distributions similar, scaling negligible"
+            : "attention collapses without scaling — only one head dominates"}
       </div>
     </div>
   );

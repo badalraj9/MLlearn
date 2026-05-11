@@ -48,7 +48,7 @@ export default function QuizWidget({ questions, onComplete }: QuizWidgetProps) {
     return (
       <div className="quiz-container">
         <div className="quiz-header">
-          <span className="playground-badge">📝 Quiz Complete</span>
+          <span className="playground-badge">Questions</span>
         </div>
         <div className="quiz-result">
           <div className="quiz-result-score">{pct}%</div>
@@ -56,12 +56,12 @@ export default function QuizWidget({ questions, onComplete }: QuizWidgetProps) {
             You got <strong>{score}</strong> out of{" "}
             <strong>{questions.length}</strong> correct
           </p>
-          {pct >= 80 && <div className="quiz-result-badge">🏆 Great job!</div>}
+          {pct >= 80 && <div className="quiz-result-badge">Well done</div>}
           {pct >= 50 && pct < 80 && (
-            <div className="quiz-result-badge">💪 Keep practicing!</div>
+            <div className="quiz-result-badge">Keep practicing</div>
           )}
           {pct < 50 && (
-            <div className="quiz-result-badge">📖 Review the material</div>
+            <div className="quiz-result-badge">Review the material</div>
           )}
           <button
             className="btn-secondary"
@@ -83,7 +83,7 @@ export default function QuizWidget({ questions, onComplete }: QuizWidgetProps) {
   return (
     <div className="quiz-container">
       <div className="quiz-header">
-        <span className="playground-badge">📝 Quiz</span>
+        <span className="playground-badge">Questions</span>
         <span className="equation-stepper-count">
           {current + 1} / {questions.length}
         </span>
@@ -114,7 +114,7 @@ export default function QuizWidget({ questions, onComplete }: QuizWidgetProps) {
       {answered && (
         <div className="quiz-explanation">
           <strong>
-            {selected === q.correctIndex ? "✅ Correct!" : "❌ Incorrect."}
+            {selected === q.correctIndex ? "Correct" : "Incorrect"}
           </strong>{" "}
           {q.explanation}
         </div>
@@ -122,7 +122,7 @@ export default function QuizWidget({ questions, onComplete }: QuizWidgetProps) {
 
       {answered && (
         <button className="btn-primary" onClick={handleNext}>
-          {current < questions.length - 1 ? "Next Question →" : "See Results"}
+          {current < questions.length - 1 ? "Next" : "See Results"}
         </button>
       )}
     </div>

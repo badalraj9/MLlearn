@@ -1,17 +1,15 @@
 import { useParams, Link } from "react-router-dom";
 import { modules } from "@/content/modules";
-import { useLearningStore } from "@/store";
 
 export default function ModuleDetailPage() {
   const { moduleId } = useParams();
   const module = modules.find((item) => item.id === moduleId);
-  const { isChapterTierCompleted } = useLearningStore();
 
   if (!module) return <div className="page-content">Module not found.</div>;
 
   return (
-    <div className="page-content">
-      <div className="page-header">
+    <div className="page-content stagger-in">
+      <div className="page-header" style={{ marginBottom: "3rem" }}>
         <div>
           <h1 className="page-header-title">{module.title}</h1>
           <p className="page-header-sub">{module.description}</p>
@@ -19,45 +17,38 @@ export default function ModuleDetailPage() {
       </div>
 
       {module.topics.length === 0 ? (
-        <div className="card" style={{ textAlign: "center", padding: "2rem" }}>
-          <p>Topics coming soon. Check back later!</p>
+        <div className="chapter-empty-card">
+          <div className="chapter-empty-icon" style={{ fontFamily: "var(--font-mono)" }}>§</div>
+          <h3>Topics in preparation</h3>
+          <p>Check back later for new content.</p>
         </div>
       ) : (
-        <div className="card-grid">
-          {module.topics.map((topic) => {
-            const completedCount = topic.chapters.filter((ch) => 
-              isChapterTierCompleted(ch.id, 1)
-            ).length;
-            const progressPercent = Math.round((completedCount / topic.chapters.length) * 100);
-            
-            return (
-              <Link
-                key={topic.id}
-                to={`/modules/${module.id}/topics/${topic.id}`}
-                className="card"
-              >
-                <h3>{topic.title}</h3>
-                <p>{topic.description}</p>
-                <div className="mt-3">
-                  <p className="text-xs mb-1" style={{ color: "var(--text-tertiary)" }}>
-                    {completedCount} / {topic.chapters.length} chapters
-                  </p>
-                  <div 
-                    className="h-1.5 rounded-full overflow-hidden"
-                    style={{ background: "var(--bg-tertiary)" }}
-                  >
-                    <div 
-                      className="h-full rounded-full"
-                      style={{ 
-                        width: `${progressPercent}%`,
-                        background: progressPercent === 100 ? "var(--success)" : "var(--accent-primary)"
-                      }}
-                    />
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+        <div className="section-block section-block--quiet">
+          <p style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2rem" }}>
+            {module.topics.length} {module.topics.length === 1 ? "chapter" : "chapters"}
+          </p>
+          {module.topics.map((topic, idx) => (
+            <Link
+              key={topic.id}
+              to={`/modules/${module.id}/topics/${topic.id}`}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "3rem 1fr",
+                gap: "1.5rem",
+                padding: "2rem 0",
+                borderBottom: "1px solid var(--border)",
+                textDecoration: "none",
+              }}
+            >
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "var(--text-tertiary)", paddingTop: "0.2rem" }}>
+                {String(idx + 1).padStart(2, '0')}
+              </span>
+              <div>
+                <h3 style={{ margin: "0 0 0.5rem", fontSize: "1.15rem" }}>{topic.title}</h3>
+                <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-secondary)" }}>{topic.description}</p>
+              </div>
+            </Link>
+          ))}
         </div>
       )}
     </div>

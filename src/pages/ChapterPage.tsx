@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { MathJax } from "better-react-mathjax";
 import { modules } from "@/content/modules";
@@ -10,16 +10,15 @@ import QuizWidget from "@/components/QuizWidget";
 import CodeToggle from "@/components/CodeToggle";
 import ChapterStrips from "@/components/ChapterStrips";
 
-const tiers: { tier: ChapterTier; label: string; icon: string }[] = [
-  { tier: 1, label: "Foundation", icon: "🌱" },
-  { tier: 2, label: "Applied", icon: "⚙️" },
-  { tier: 3, label: "Advanced", icon: "🔬" },
+const tiers: { tier: ChapterTier; label: string }[] = [
+  { tier: 1, label: "I" },
+  { tier: 2, label: "II" },
+  { tier: 3, label: "III" },
 ];
 
-/** Estimate reading time from intro + keyIdeas text */
 function estimateReadingTime(intro: string[], keyIdeas: string[]): number {
   const wordCount = [...intro, ...keyIdeas].join(" ").split(/\s+/).length;
-  return Math.max(1, Math.round(wordCount / 200)); // ~200 wpm
+  return Math.max(1, Math.round(wordCount / 200));
 }
 
 export default function ChapterPage() {
@@ -34,10 +33,8 @@ export default function ChapterPage() {
     unlockChapterTier,
     completeChapterTier,
     isChapterTierCompleted,
-    getCompletionStats,
   } = useLearningStore();
 
-  // Keyboard shortcuts: ← → to switch tiers, 1/2/3 to jump
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (
@@ -57,8 +54,6 @@ export default function ChapterPage() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [activeTier]);
 
-  const stats = useMemo(() => getCompletionStats(), [getCompletionStats]);
-
   if (!module || !topic || !chapter) {
     return <div className="page-content">Chapter not found.</div>;
   }
@@ -77,18 +72,14 @@ export default function ChapterPage() {
       activeLevel.content.keyIdeas.length > 0);
 
   const readingTime = activeLevel
-    ? estimateReadingTime(
-        activeLevel.content.intro,
-        activeLevel.content.keyIdeas,
-      )
+    ? estimateReadingTime(activeLevel.content.intro, activeLevel.content.keyIdeas)
     : 0;
 
   return (
     <div className="chapter-layout">
-      {/* Floating Tier Nav */}
       <aside className="tier-nav-floating">
         <div className="tier-nav-group">
-          {tiers.map(({ tier, label, icon }) => {
+          {tiers.map(({ tier, label }) => {
             const tierUnlocked = isChapterTierUnlocked(chapter.id, tier);
             const tierCompleted = isChapterTierCompleted(chapter.id, tier);
             return (
@@ -98,235 +89,218 @@ export default function ChapterPage() {
                 onClick={() => setActiveTier(tier)}
                 title={label}
               >
-                <div className="tier-capsule-icon">{icon}</div>
-                {tierCompleted && <span className="tier-capsule-badge">✓</span>}
-                {!tierUnlocked && (
-                  <span className="tier-capsule-badge">🔒</span>
-                )}
+                <span style={{ fontSize: "0.7rem" }}>{label}</span>
               </button>
             );
           })}
         </div>
-
-        <div className="tier-nav-group tier-nav-meta">
-          <div className="tier-capsule tier-capsule--meta" title="Coins">
-            <span className="tier-capsule-icon">💰</span>
-            <span className="tier-capsule-value">{coins}</span>
-          </div>
-          <div
-            className="tier-capsule tier-capsule--meta"
-            title="Completion Stats"
-          >
-            <span className="tier-capsule-icon">📊</span>
-            <span className="tier-capsule-value">
-              {stats.completedTiers}/{stats.totalTiers}
-            </span>
-          </div>
-        </div>
       </aside>
 
-      {/* Main Content */}
       <main className="chapter-main page-content stagger-in">
-        <div className="page-header">
+        <div className="page-header" style={{ marginBottom: "3rem" }}>
           <div>
             <h1 className="page-header-title">{chapter.title}</h1>
             <p className="page-header-sub">{chapter.description}</p>
           </div>
-          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
             {hasContent && (
-              <span className="reading-time-badge">⏱ {readingTime} min</span>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--text-tertiary)" }}>
+                {readingTime} min
+              </span>
             )}
-            <div className="tier-pill">
-              {tiers.find((t) => t.tier === activeTier)?.icon}{" "}
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", letterSpacing: "0.08em", color: "var(--text-tertiary)", textTransform: "uppercase" }}>
               {tiers.find((t) => t.tier === activeTier)?.label}
-            </div>
+            </span>
           </div>
         </div>
 
         {!unlocked ? (
-          <div className="chapter-locked-card">
-            <div className="chapter-locked-icon">🔒</div>
-            <h3>Tier Locked</h3>
-            <p>
+          <div style={{ textAlign: "center", padding: "4rem 0" }}>
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--text-tertiary)", marginBottom: "1rem" }}>
+              — {activeLevel?.title || `Section ${activeTier}`} —
+            </p>
+            <p style={{ fontSize: "0.9rem", color: "var(--text-tertiary)", marginBottom: "1.5rem" }}>
               {activeTier > 1 &&
-              !isChapterTierCompleted(
-                chapter.id,
-                (activeTier - 1) as ChapterTier,
-              )
-                ? `Complete the ${tiers[activeTier - 2].label} tier first.`
-                : `Unlock this tier for ${activeLevel?.cost ?? 0} coins.`}
+              !isChapterTierCompleted(chapter.id, (activeTier - 1) as ChapterTier)
+                ? `Requires ${tiers[activeTier - 2].label} completion.`
+                : `Unlocks for ${activeLevel?.cost ?? 0} coins.`}
             </p>
             {canUnlock && (
               <button
-                className="btn-primary"
                 onClick={() =>
-                  unlockChapterTier(
-                    chapter.id,
-                    activeTier,
-                    activeLevel?.cost ?? 0,
-                  )
+                  unlockChapterTier(chapter.id, activeTier, activeLevel?.cost ?? 0)
                 }
+                style={{
+                  background: "none",
+                  border: "none",
+                  borderBottom: "1px solid var(--text-secondary)",
+                  padding: "2px 0",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "0.8rem",
+                  color: "var(--text-secondary)",
+                  cursor: "pointer",
+                }}
               >
-                Unlock for {activeLevel?.cost ?? 0} coins
+                proceed · {activeLevel?.cost ?? 0} coins
               </button>
             )}
           </div>
         ) : !hasContent ? (
-          <div className="chapter-empty-card">
-            <div className="chapter-empty-icon">📝</div>
-            <h3>Content Coming Soon</h3>
-            <p>This tier is being prepared. Check back later!</p>
+          <div style={{ textAlign: "center", padding: "4rem 0" }}>
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "var(--text-tertiary)" }}>
+              content in preparation
+            </p>
           </div>
         ) : (
           <>
-            {/* Theory / Intro */}
             {activeLevel && activeLevel.content.intro.length > 0 && (
-              <section className="chapter-section">
-                <div className="section-title">Theory</div>
-                <div className="chapter-prose">
-                  {activeLevel.content.intro.map((line, i) => (
-                    <p key={i} className="hero-copy">
-                      <MathJax>{line}</MathJax>
-                    </p>
-                  ))}
-                </div>
+              <section style={{ margin: "2rem 0" }}>
+                {activeLevel.content.intro.map((line, i) => (
+                  <p key={i} style={{ fontSize: "1rem", lineHeight: 1.85, marginBottom: "1.25rem" }}>
+                    <MathJax>{line}</MathJax>
+                  </p>
+                ))}
               </section>
             )}
 
-            {/* Aha Insights */}
             {activeLevel &&
               activeLevel.content.ahaInsights &&
               activeLevel.content.ahaInsights.length > 0 && (
-                <section className="chapter-section">
+                <section style={{ margin: "2.5rem 0", paddingLeft: "1rem", borderLeft: "1px solid var(--border)" }}>
                   {activeLevel.content.ahaInsights.map((insight, i) => (
-                    <div key={i} className="aha-callout">
-                      <span className="aha-icon">💡</span>
-                      <span>
-                        <MathJax>{insight}</MathJax>
-                      </span>
-                    </div>
+                    <p key={i} style={{ fontSize: "0.95rem", color: "var(--text-secondary)", fontStyle: "italic", lineHeight: 1.7 }}>
+                      <MathJax inline>{insight}</MathJax>
+                    </p>
                   ))}
                 </section>
               )}
 
-            {/* Equation Stepper */}
             {activeLevel &&
               activeLevel.content.equationSteps &&
               activeLevel.content.equationSteps.length > 0 && (
-                <section className="chapter-section">
+                <section style={{ margin: "2rem 0" }}>
                   <EquationStepper steps={activeLevel.content.equationSteps} />
                 </section>
               )}
 
-            {/* Equations */}
             {activeLevel &&
               activeLevel.content.equations &&
               activeLevel.content.equations.length > 0 && (
-                <section className="chapter-section">
-                  <div className="section-title">Equations</div>
+                <section style={{ margin: "3rem 0 2rem" }}>
                   {activeLevel.content.equations.map((eq, i) => (
-                    <div key={i} className="equation-block">
+                    <div key={i} className="equation-block equation-block--standalone">
                       <MathJax>{eq}</MathJax>
                     </div>
                   ))}
                 </section>
               )}
 
-            {/* Key Ideas */}
             {activeLevel && activeLevel.content.keyIdeas.length > 0 && (
-              <section className="chapter-section">
-                <div className="section-title">Key Ideas</div>
-                <div className="card insert-block">
-                  <ul className="topic-list">
-                    {activeLevel.content.keyIdeas.map((idea, i) => (
-                      <li key={i}>
-                        <MathJax>{idea}</MathJax>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <section style={{ margin: "2rem 0" }}>
+                {activeLevel.content.keyIdeas.map((idea, i) => (
+                  <div key={i} style={{
+                    display: "grid",
+                    gridTemplateColumns: "2rem 1fr",
+                    gap: "1rem",
+                    padding: "1.25rem 0",
+                    borderBottom: "1px solid var(--border)",
+                  }}>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "var(--text-tertiary)", paddingTop: "2px" }}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span style={{ fontSize: "0.9rem", lineHeight: 1.7 }}>
+                      <MathJax>{idea}</MathJax>
+                    </span>
+                  </div>
+                ))}
               </section>
             )}
 
-            {/* Code Toggle */}
             {activeLevel && activeLevel.codeContent && (
-              <section className="chapter-section">
+              <section style={{ margin: "2rem 0" }}>
                 <CodeToggle codeBlock={activeLevel.codeContent} />
               </section>
             )}
 
-            {/* Playground Widget */}
             {activeLevel && activeLevel.playground && (
-              <section className="chapter-section">
-                <div className="section-title">Playground</div>
+              <section style={{ margin: "2.5rem 0" }}>
                 <PlaygroundRenderer config={activeLevel.playground} />
               </section>
             )}
 
-            {/* Quiz */}
             {activeLevel &&
               activeLevel.content.quiz &&
               activeLevel.content.quiz.length > 0 && (
-                <section className="chapter-section">
-                  <div className="section-title">Quiz</div>
+                <section style={{ margin: "2.5rem 0" }}>
                   <QuizWidget questions={activeLevel.content.quiz} />
                 </section>
               )}
 
-            {/* References */}
             {activeLevel &&
               activeLevel.content.references &&
               activeLevel.content.references.length > 0 && (
-                <section className="chapter-section">
-                  <div className="section-title">References</div>
-                  <div className="callout">
-                    {activeLevel.content.references.join(" • ")}
-                  </div>
+                <section style={{ margin: "2.5rem 0" }}>
+                  <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-tertiary)", marginBottom: "0.75rem" }}>
+                    References
+                  </p>
+                  <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.8 }}>
+                    {activeLevel.content.references.join(" · ")}
+                  </p>
                 </section>
               )}
 
-            {/* Side Strip Tools (auto-generated per module) */}
             <ChapterStrips
               moduleId={module.id}
               chapterId={chapter.id}
               activeTier={activeTier}
             />
 
-            {/* Complete Button */}
-            {!completed && (
-              <button
-                className="btn-primary"
-                onClick={() => completeChapterTier(chapter.id, activeTier)}
-                style={{ marginTop: "1.5rem" }}
-              >
-                ✅ Complete {tiers.find((t) => t.tier === activeTier)?.label}{" "}
-                Tier
-              </button>
-            )}
-            {completed && (
-              <div className="callout" style={{ marginTop: "1.5rem" }}>
-                ✅ Tier completed!
+            {!completed ? (
+              <div style={{ marginTop: "2.5rem", borderTop: "1px solid var(--border)", paddingTop: "1.5rem" }}>
+                <button
+                  onClick={() => completeChapterTier(chapter.id, activeTier)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    borderBottom: "1px solid var(--border)",
+                    padding: "2px 0",
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.8rem",
+                    color: "var(--text-tertiary)",
+                    cursor: "pointer",
+                    transition: "color 150ms ease",
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = "var(--text-primary)"}
+                  onMouseLeave={(e) => e.currentTarget.style.color = "var(--text-tertiary)"}
+                >
+                  continue to next section
+                </button>
+              </div>
+            ) : (
+              <div style={{ marginTop: "2.5rem", paddingTop: "1.5rem", borderTop: "1px solid var(--border)", display: "flex", alignItems: "center", gap: "12px" }}>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  complete
+                </span>
               </div>
             )}
           </>
         )}
 
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            marginTop: "1.5rem",
-            alignItems: "center",
-          }}
-        >
+        <div style={{ marginTop: "3rem" }}>
           <Link
             to={`/modules/${module.id}/topics/${topic.id}`}
-            className="btn-secondary"
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.75rem",
+              color: "var(--text-tertiary)",
+              textDecoration: "none",
+              letterSpacing: "0.02em",
+            }}
           >
-            ← Back to Chapters
+            back
           </Link>
-          <span className="kbd-hint">
-            ← → switch tiers · 1 2 3 jump to tier
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", color: "var(--text-tertiary)", marginLeft: "16px", opacity: 0.6 }}>
+            {String(activeTier)} / 3 · {String.fromCharCode(8592)}{String.fromCharCode(8594)} navigate
           </span>
         </div>
       </main>

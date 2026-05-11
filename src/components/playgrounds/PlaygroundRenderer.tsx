@@ -48,7 +48,7 @@ export default function PlaygroundRenderer({
       return (
         <div className="playground-container">
           <div className="playground-header">
-            <span className="playground-badge">💻 Code</span>
+            <span className="playground-badge">Code</span>
           </div>
           <pre className="playground-code-preview">
             {config.code || "// Coming soon"}
@@ -68,7 +68,7 @@ export default function PlaygroundRenderer({
           return (
             <div className="playground-container">
               <div className="playground-header">
-                <span className="playground-badge">🔧 Widget</span>
+                <span className="playground-badge">Widget</span>
               </div>
               <p className="text-sm text-gray-500">Unknown widget: {config.widgetId}</p>
             </div>

@@ -6,11 +6,8 @@ interface GraphPlaygroundProps {
   xRange?: [number, number];
   yRange?: [number, number];
   label?: string;
+  height?: number;
 }
-
-const W = 480;
-const H = 280;
-const PAD = 40;
 
 export default function GraphPlayground({
   fn,
@@ -18,6 +15,7 @@ export default function GraphPlayground({
   xRange = [-5, 5],
   yRange = [-3, 3],
   label,
+  height = 220,
 }: GraphPlaygroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -28,76 +26,77 @@ export default function GraphPlayground({
     if (!ctx) return;
 
     const dpr = window.devicePixelRatio || 1;
+    const W = canvas.offsetWidth;
+    const H = height;
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     ctx.scale(dpr, dpr);
 
-    // Clear
     ctx.clearRect(0, 0, W, H);
 
     const [xMin, xMax] = xRange;
     const [yMin, yMax] = yRange;
-    const plotW = W - PAD * 2;
-    const plotH = H - PAD * 2;
+    const padX = Math.round(W * 0.08);
+    const padY = Math.round(H * 0.1);
+    const plotW = W - padX * 2;
+    const plotH = H - padY * 2;
 
-    const toCanvasX = (x: number) => PAD + ((x - xMin) / (xMax - xMin)) * plotW;
-    const toCanvasY = (y: number) => PAD + ((yMax - y) / (yMax - yMin)) * plotH;
+    const toCanvasX = (x: number) => padX + ((x - xMin) / (xMax - xMin)) * plotW;
+    const toCanvasY = (y: number) => padY + ((yMax - y) / (yMax - yMin)) * plotH;
 
-    // Grid lines
-    ctx.strokeStyle = "rgba(120, 88, 58, 0.08)";
-    ctx.lineWidth = 1;
+    // Hairline grid - very faint
+    ctx.strokeStyle = "rgba(60, 60, 60, 0.06)";
+    ctx.lineWidth = 0.5;
     for (let x = Math.ceil(xMin); x <= xMax; x++) {
       ctx.beginPath();
-      ctx.moveTo(toCanvasX(x), PAD);
-      ctx.lineTo(toCanvasX(x), H - PAD);
+      ctx.moveTo(toCanvasX(x), padY);
+      ctx.lineTo(toCanvasX(x), H - padY);
       ctx.stroke();
     }
     for (let y = Math.ceil(yMin); y <= yMax; y++) {
       ctx.beginPath();
-      ctx.moveTo(PAD, toCanvasY(y));
-      ctx.lineTo(W - PAD, toCanvasY(y));
+      ctx.moveTo(padX, toCanvasY(y));
+      ctx.lineTo(W - padX, toCanvasY(y));
       ctx.stroke();
     }
 
-    // Axes
-    ctx.strokeStyle = "rgba(94, 68, 45, 0.35)";
-    ctx.lineWidth = 1.5;
-    // X axis
+    // Axes - hairline, slightly darker
+    ctx.strokeStyle = "rgba(60, 60, 60, 0.25)";
+    ctx.lineWidth = 0.75;
     if (yMin <= 0 && yMax >= 0) {
       ctx.beginPath();
-      ctx.moveTo(PAD, toCanvasY(0));
-      ctx.lineTo(W - PAD, toCanvasY(0));
+      ctx.moveTo(padX, toCanvasY(0));
+      ctx.lineTo(W - padX, toCanvasY(0));
       ctx.stroke();
     }
-    // Y axis
     if (xMin <= 0 && xMax >= 0) {
       ctx.beginPath();
-      ctx.moveTo(toCanvasX(0), PAD);
-      ctx.lineTo(toCanvasX(0), H - PAD);
+      ctx.moveTo(toCanvasX(0), padY);
+      ctx.lineTo(toCanvasX(0), H - padY);
       ctx.stroke();
     }
 
-    // Axis labels
-    ctx.fillStyle = "rgba(94, 68, 45, 0.5)";
-    ctx.font = "11px 'Source Sans 3', sans-serif";
+    // Axis tick labels - very small, faded
+    ctx.fillStyle = "rgba(60, 60, 60, 0.35)";
+    ctx.font = "9px 'JetBrains Mono', monospace";
     ctx.textAlign = "center";
     for (let x = Math.ceil(xMin); x <= xMax; x++) {
       if (x === 0) continue;
-      ctx.fillText(String(x), toCanvasX(x), H - PAD + 16);
+      ctx.fillText(String(x), toCanvasX(x), H - padY + 12);
     }
     ctx.textAlign = "right";
     for (let y = Math.ceil(yMin); y <= yMax; y++) {
       if (y === 0) continue;
-      ctx.fillText(String(y), PAD - 8, toCanvasY(y) + 4);
+      ctx.fillText(String(y), padX - 4, toCanvasY(y) + 3);
     }
 
-    // Plot function
+    // Plot function - refined stroke
     ctx.beginPath();
-    ctx.strokeStyle = "#A0522D";
-    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = "rgba(60, 60, 60, 0.6)";
+    ctx.lineWidth = 1.25;
     ctx.lineJoin = "round";
 
-    const steps = plotW * 2;
+    const steps = plotW * 1.5;
     let started = false;
     for (let i = 0; i <= steps; i++) {
       const x = xMin + (i / steps) * (xMax - xMin);
@@ -121,24 +120,29 @@ export default function GraphPlayground({
     }
     ctx.stroke();
 
-    // Label
+    // Equation label - bottom left, quiet
     if (label) {
-      ctx.fillStyle = "rgba(94, 68, 45, 0.7)";
-      ctx.font = "600 12px 'Source Sans 3', sans-serif";
+      ctx.fillStyle = "rgba(60, 60, 60, 0.4)";
+      ctx.font = "10px 'JetBrains Mono', monospace";
       ctx.textAlign = "left";
-      ctx.fillText(label, PAD + 8, PAD + 16);
+      ctx.fillText(label, padX, H - padY - 4);
     }
-  }, [fn, params, xRange, yRange, label]);
+  }, [fn, params, xRange, yRange, label, height]);
 
   useEffect(() => {
     draw();
   }, [draw]);
 
+  useEffect(() => {
+    const observer = new ResizeObserver(() => draw());
+    if (canvasRef.current) observer.observe(canvasRef.current);
+    return () => observer.disconnect();
+  }, [draw]);
+
   return (
     <canvas
       ref={canvasRef}
-      className="playground-graph-canvas"
-      style={{ width: W, height: H }}
+      style={{ width: "100%", height, display: "block" }}
     />
   );
 }

@@ -40,17 +40,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Table of Contents */}
-      <div className="toc-block">
-        <div className="toc-title">On This Page</div>
-        <div className="toc-list">
-          <span>Overview</span>
-          <span>Progress</span>
-          <span>Recent Activity</span>
-          <span>Bookmarks</span>
-        </div>
-      </div>
-
-      <div className="section-divider" aria-hidden="true" />
+      
 
       {/* User Info */}
       <section className="section-block">

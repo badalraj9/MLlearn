@@ -14,7 +14,7 @@ export default function CodeToggle({ codeBlock }: CodeToggleProps) {
         className={`code-toggle-btn${visible ? " code-toggle-btn--active" : ""}`}
         onClick={() => setVisible(!visible)}
       >
-        <span>{visible ? "📖 Theory" : "💻 Code"}</span>
+        <span>{visible ? "Theory" : "Code"}</span>
         <span className="code-toggle-lang">{codeBlock.language}</span>
       </button>
 

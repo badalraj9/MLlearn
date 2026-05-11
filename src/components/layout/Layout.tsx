@@ -1,8 +1,7 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import TopNav from "./TopNav";
 import Header from "./Header";
-import LampPull from "./LampPull";
 
 const pageNumbers: Record<string, string> = {
   "/": "01",
@@ -17,51 +16,68 @@ const pageOrder = ["/", "/modules", "/papers", "/about", "/graph"];
 export default function Layout() {
   const location = useLocation();
   const prevIndexRef = useRef<number>(0);
-  const [direction, setDirection] = useState<"forward" | "back">("forward");
+
   const pageNumber =
     pageNumbers[location.pathname] ??
     (location.pathname.startsWith("/modules") ? "03" : "06");
-  const currentIndex = pageOrder.indexOf(location.pathname);
-  const prevPath = currentIndex > 0 ? pageOrder[currentIndex - 1] : null;
-  const nextPath =
-    currentIndex >= 0 && currentIndex < pageOrder.length - 1
-      ? pageOrder[currentIndex + 1]
-      : null;
 
   useEffect(() => {
-    if (currentIndex === -1) return;
-    const prevIndex = prevIndexRef.current;
-    setDirection(currentIndex >= prevIndex ? "forward" : "back");
-    prevIndexRef.current = currentIndex;
-  }, [currentIndex]);
+    const currentIndex = pageOrder.indexOf(location.pathname);
+    if (currentIndex >= 0) {
+      prevIndexRef.current = currentIndex;
+    }
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen font-body">
-      <LampPull />
-      <div className="book-shell">
-        <div className="punch-rail" aria-hidden="true">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <span key={i} className="punch-hole-dot" />
-          ))}
-        </div>
-        <div className="book-page">
-          <TopNav />
-          <Header />
-          <div className="page-surface">
-            <main
-              className={`page-flip page-flip--side page-flip--${direction}`}
-              key={location.pathname}
-            >
-              <Outlet />
-            </main>
-          </div>
-          <div className="page-number" aria-hidden="true">
-            Page {pageNumber}
-          </div>
-          <div className="micro-nav">
-            {prevPath ? <Link to={prevPath}>Previous</Link> : <span>Previous</span>}
-            {nextPath ? <Link to={nextPath}>Next</Link> : <span>Next</span>}
-          </div>
+      <div className="monumental-eq monumental-eq--top" aria-hidden="true">
+        E = mc^2
+      </div>
+      <div className="monumental-eq monumental-eq--bottom" aria-hidden="true">
+        f(x)
+      </div>
+      <div className="monumental-eq monumental-eq--corner" aria-hidden="true">
+        sum
+      </div>
+
+      <div className="math-fragment math-fragment--left" aria-hidden="true">
+        J = (1/2m)*sum(y-yhat)^2<br />
+        nabla f = grad f<br />
+        P(A|B) = P(B|A)P(A)/P(B)<br />
+        sigma^2 = var(x)
+      </div>
+      <div className="math-fragment math-fragment--right" aria-hidden="true">
+        E[X] = sum x*P(x)<br />
+        d/dx [f(g(x))] = f'g'<br />
+        det(A-lambda I) = 0<br />
+        softmax(x)_i
+      </div>
+      <div className="theorem-trace theorem-trace--top-left" aria-hidden="true">
+        Cost function<br />
+        Gradient descent<br />
+        Bayes theorem<br />
+        Variance formula
+      </div>
+      <div className="theorem-trace theorem-trace--bottom-right" aria-hidden="true">
+        Chain rule<br />
+        Matrix inverse<br />
+        KL divergence<br />
+        Cross entropy
+      </div>
+      
+      <div className="coordinate-trace" aria-hidden="true" />
+      <div className="graph-trace" aria-hidden="true" />
+      
+      <div className="book-page">
+        <TopNav />
+        <Header />
+        <div className="page-surface">
+          <main
+            className="page-settle"
+            key={location.pathname}
+          >
+            <Outlet />
+          </main>
         </div>
       </div>
     </div>
