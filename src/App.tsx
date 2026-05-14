@@ -9,14 +9,14 @@ import TopicPage from "@/pages/TopicPage";
 import ChapterPage from "@/pages/ChapterPage";
 import PapersPage from "@/pages/PapersPage";
 import ConceptGraphPage from "@/pages/ConceptGraphPage";
-import SignInPage from "@/pages/SignIn";
-import SignUpPage from "@/pages/SignUp";
+import AuthPage from "@/pages/AuthPage";
 import SettingsPage from "@/pages/Settings";
 import ProfilePage from "@/pages/Profile";
 import PaperDetailPage from "@/pages/PaperDetailPage";
 import ConceptsPage from "@/pages/ConceptsPage";
 import ConceptDetailPage from "@/pages/ConceptDetailPage";
 import { supabase } from "@/lib/supabase";
+import LossLandscapeHero from "@/components/widgets/LossLandscapeHero";
 
 const mathJaxConfig = {
   tex: {
@@ -31,11 +31,12 @@ const mathJaxConfig = {
 export default function App() {
   return (
     <MathJaxContext config={mathJaxConfig}>
+      <LossLandscapeHero />
       <BrowserRouter>
         <Routes>
           {/* Auth pages - no layout wrapper */}
-          <Route path="/signin" element={<SignInPage supabase={supabase} />} />
-          <Route path="/signup" element={<SignUpPage supabase={supabase} />} />
+          <Route path="/signin" element={<AuthPage supabase={supabase} />} />
+          <Route path="/signup" element={<AuthPage supabase={supabase} />} />
           
           {/* Main app with layout */}
           <Route element={<Layout />}>

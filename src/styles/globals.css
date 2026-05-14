@@ -549,34 +549,35 @@ a:hover {
   align-items: center;
   justify-content: center;
   z-index: 100;
-  padding: 6px 14px;
-  background: rgba(245, 245, 243, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(224, 224, 222, 0.8);
+  padding: 6px 16px;
+  background: rgba(248, 247, 244, 0.82);
 }
 
 .nav-dock {
   display: flex;
   gap: 24px;
   align-items: center;
+  padding: 10px 0 0;
+  border-top: 1px solid var(--border);
 }
 
 .nav-dock-link {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.08em;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   text-decoration: none;
   transition: color 120ms ease;
+  padding-bottom: 4px;
 }
 
 .nav-dock-link:hover {
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 .nav-dock-link--active {
-  color: var(--text-secondary);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--text-secondary);
 }
 
 .nav-dock-link--meta {

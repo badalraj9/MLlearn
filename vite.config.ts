@@ -9,4 +9,17 @@ export default defineConfig({
       "@": "/src",
     },
   },
+  server: {
+    proxy: {
+      "/api/arxiv": {
+        target: "https://export.arxiv.org/api/query",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/arxiv/, ""),
+        headers: {
+          "User-Agent":
+            "MLearn/1.0 (mathematical reading environment; mailto:research@mlearn.dev)",
+        },
+      },
+    },
+  },
 });
